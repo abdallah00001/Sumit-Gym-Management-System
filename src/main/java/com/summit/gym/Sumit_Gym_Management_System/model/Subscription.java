@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
@@ -18,25 +19,44 @@ public class Subscription {
     @Id
     @GeneratedValue
     private Long id;
+
     @ManyToOne
     private Member member;
+
+    @ManyToOne
     private PaymentType paymentType;
-    private Coach coach;
-    private Cashier cashier;
+
+    @ManyToOne
+    private User user;
+
+    @ManyToOne
     private SubscriptionType subscriptionType;
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    private Shift shift;
+
+    private LocalDateTime createdAt;
     private LocalDate startDate;
     private LocalDate expireDate;
+    @Transient
+    private boolean isExpired;
+
 
     public boolean isExpired() {
-        return expireDate.isAfter(LocalDate.now());
+        return !expireDate.isAfter(LocalDate.now());
     }
 
-//    @PrePersist
-//    @PreUpdate
-//    public void calculateExpireDate() {
-//        expireDate = startDate.plusMonths(subscriptionType.getDurationInMonth());
-//    }
+    public int getPrice() {
+        return subscriptionType.getPrice();
+    }
 
+
+    @PrePersist
+    @PreUpdate
+    public void calculateExpireDate() {
+//        expireDate = startDate.plusMonths(subscriptionType.getDurationInMonth());
+        expireDate = startDate.plusMonths(1);
+    }
 
 
 }
