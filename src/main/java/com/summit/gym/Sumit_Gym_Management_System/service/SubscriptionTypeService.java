@@ -28,11 +28,8 @@ public class SubscriptionTypeService {
         subscriptionTypeRepo.save(subscriptionType);
     }
 
-    public void deleteById(Long id) {
-        if (!subscriptionTypeRepo.existsById(id)) {
-            throw new EntityNotFoundException(notFoundMessage);
-        }
-        subscriptionTypeRepo.deleteById(id);
+    public void delete(SubscriptionType type) {
+        subscriptionTypeRepo.delete(type);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.summit.gym.Sumit_Gym_Management_System.validation;
+package com.summit.gym.Sumit_Gym_Management_System.validation.validators;
 
 import com.summit.gym.Sumit_Gym_Management_System.model.User;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.UserRepo;
@@ -21,8 +21,9 @@ public class UserValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         User user = (User) target;
-        if (userRepo.existsByUserName(user.getUserName())) {
-            errors.rejectValue("userName","Exists","User name already taken");
+        if (userRepo.existsByUserName(user.getUsername())) {
+            errors.rejectValue("username","Exists","Class: User name already taken");
         }
+        errors.rejectValue("username","Exists");
     }
 }

@@ -6,6 +6,7 @@ import com.summit.gym.Sumit_Gym_Management_System.reposiroty.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class OnStartupConfig implements ApplicationRunner {
 
     private final UserRepo userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public void run(ApplicationArguments args) {
@@ -26,7 +28,7 @@ public class OnStartupConfig implements ApplicationRunner {
             // Create a default admin
             User admin = new User();
             admin.setUserName("admin");
-            admin.setPassword("adminpassword");
+            admin.setPassword(passwordEncoder.encode("adminpassword"));
 //            admin.setPassword(new BCryptPasswordEncoder().encode("adminpassword")); // Replace with a secure password
             admin.setRole(Role.ROLE_ADMIN);
             userRepo.save(admin);

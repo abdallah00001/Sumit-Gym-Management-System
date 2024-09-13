@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Appenders>
+
+        <!-- Console Appender (for general logging to the console) -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n" />
+        </Console>
+
+        <!-- Appender for save operations -->
+        <File name="SaveOperationsAppender" fileName="logs/save-operations.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n" />
+        </File>
+
+        <!-- Appender for error logs -->
+        <File name="ErrorAppender" fileName="logs/errors.log">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n" />
+        </File>
+
+    </Appenders>
+
+    <Loggers>
+
+        <!-- Logger for save operations, logs to 'save-operations.log' -->
+        <Logger name="com.example.SaveOperations" level="info" additivity="false">
+            <AppenderRef ref="SaveOperationsAppender" />
+        </Logger>
+
+        <!-- Logger for errors, logs to 'errors.log' -->
+        <Logger name="com.example.Errors" level="error" additivity="false">
+            <AppenderRef ref="ErrorAppender" />
+        </Logger>
+
+        <!-- Root logger (can log to the console or general files, if needed) -->
+        <Root level="info">
+            <AppenderRef ref="Console" />
+        </Root>
+
+    </Loggers>
+</Configuration>

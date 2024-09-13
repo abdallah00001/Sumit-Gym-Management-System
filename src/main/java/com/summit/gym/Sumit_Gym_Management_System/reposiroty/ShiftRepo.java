@@ -21,4 +21,5 @@ public interface ShiftRepo extends JpaRepository<Shift, Long> {
 
     Optional<Shift> findByStartDateTimeAndUser(LocalDateTime start, User user);
 
+    Optional<Shift> findFirstByUser(User user);
 }

@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,24 +21,30 @@ public class Shift {
     @GeneratedValue
     private Long id;
 
+    private int num;
+
     @ManyToOne
     private User user;
 
     private LocalDateTime startDateTime;
     private LocalDateTime finishDateTime;
 
-    @OneToMany(cascade = CascadeType.PERSIST)
-    private List<Subscription> subscriptions;
+    @OneToMany
+//            (cascade = CascadeType.MERGE)
+//    @OneToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH})
+//    @OneToMany(fetch = FetchType.EAGER)
+    private List<Subscription> subscriptions = new ArrayList<>();
 
     private int totalMoney;
 
+    private boolean isActive = true;
+
+
     public int calculateTotalMoney() {
         return subscriptions.stream()
-                .mapToInt(Subscription::getPrice)
+                .mapToInt(Subscription::getFinalPrice)
                 .sum();
     }
-
-
 
 
 }
