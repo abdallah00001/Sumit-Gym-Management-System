@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members List</title>
+    <link rel="stylesheet" href="members.css"> <!-- Optional for styling -->
+    <script src="api-utils.js"></script>
+    <script defer src="members.js"></script> <!-- JS file that handles member fetching -->
+</head>
+<body>
+    <div id="toast" class="toast"></div>
+    
+    <h1>Members List</h1>
+    
+    <table id="membersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Members will be dynamically inserted here -->
+        </tbody>
+    </table>
+</body>
+</html>

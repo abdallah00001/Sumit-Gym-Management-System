@@ -3,6 +3,7 @@ package com.summit.gym.Sumit_Gym_Management_System.service;
 import com.summit.gym.Sumit_Gym_Management_System.dto.SubscriptionDto;
 import com.summit.gym.Sumit_Gym_Management_System.exceptions.MemberNotFoundException;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
+import com.summit.gym.Sumit_Gym_Management_System.model.Shift;
 import com.summit.gym.Sumit_Gym_Management_System.model.Subscription;
 import com.summit.gym.Sumit_Gym_Management_System.model.SubscriptionType;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.MemberRepo;
@@ -69,17 +70,21 @@ public class SubscriptionService {
     public void save(Subscription subscription, Long memberId) {
         Member member = memberRepo.findById(memberId).orElseThrow(MemberNotFoundException::new);
         Subscription latestSubscription = member.getLatestSubscription();
+        Shift shift;
+        Long userId;
 
         if (latestSubscription != null && !latestSubscription.isExpired()) {
             throw new IllegalStateException("User already has an active subscription");
         }
 
-        Long userId = securityUtil.extractUserIdFromSession();
+        //Manage bidirectional mappings
+//        Shift shift = shiftRepo.findById(1L).orElseThrow();
+        shift = securityUtil.findCurrentShift();
+        shift.getSubscriptions().add(subscription);
+        userId = securityUtil.extractUserIdFromSession();
         subscription.getUser().setId(userId);
         member.getSubscriptions().add(subscription);
         subscription.setMember(member);
-//        Shift shift = shiftRepo.findById(1L).orElseThrow();
-//        shift.getSubscriptions().add(subscription);
         validateAndSave(subscription);
     }
 

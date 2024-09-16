@@ -21,7 +21,7 @@ public class Shift {
     @GeneratedValue
     private Long id;
 
-    private int num;
+//    private int num;
 
     @ManyToOne
     private User user;
@@ -44,6 +44,16 @@ public class Shift {
         return subscriptions.stream()
                 .mapToInt(Subscription::getFinalPrice)
                 .sum();
+    }
+
+    public void close() {
+        finishDateTime = LocalDateTime.now();
+        isActive = false;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        startDateTime = LocalDateTime.now();
     }
 
 

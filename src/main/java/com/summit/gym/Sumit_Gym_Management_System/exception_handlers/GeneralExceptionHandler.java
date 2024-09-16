@@ -1,5 +1,6 @@
 package com.summit.gym.Sumit_Gym_Management_System.exception_handlers;
 
+import com.summit.gym.Sumit_Gym_Management_System.exceptions.ActiveShiftReassignedException;
 import com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
@@ -20,6 +21,13 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GeneralExceptionHandler {
+
+    //Exception is not referring to a faulty state
+    //Just to notify the user that the shift is not new, and he was reassigned old active shift
+    @ExceptionHandler(ActiveShiftReassignedException.class)
+    public ResponseEntity<String> reassignedShiftHandler(ActiveShiftReassignedException e) {
+        return ResponseEntity.ok(e.getMessage());
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<String> handleDataIntegrityViolation(DataIntegrityViolationException e) {

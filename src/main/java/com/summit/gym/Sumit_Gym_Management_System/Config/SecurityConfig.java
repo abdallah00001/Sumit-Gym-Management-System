@@ -30,11 +30,16 @@ public class SecurityConfig {
                                 .antMatcher("/**/admin/**")).hasAuthority(Role.ROLE_ADMIN.name())
                         .anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults()).httpBasic(Customizer.withDefaults())
-            .logout(logout -> logout
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIONID"));
+//                .formLogin(formLogin -> formLogin
+//                        .loginPage("/login")  // Your custom login page
+//                        .successHandler(successHandler)  // Use custom success handler
+//                )
+                .logout(Customizer.withDefaults());
+//            .logout(logout -> logout
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/login?logout")
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID"));
         return httpSecurity.build();
     }
 
