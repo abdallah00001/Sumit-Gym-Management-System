@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <form id="loginForm">
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <button type="submit">Login</button>
+    </form>
+
+    <p id="error-message" style="color: red;"></p>
+
+    <script>
+        const baseUrl = "http://localhost:8080"
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault();  // Prevent the form from submitting traditionally
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Prepare the data in URL-encoded form, as required by Spring Security's default form login
+            const data = new URLSearchParams();
+            data.append('username', username);
+            data.append('password', password);
+
+            fetch('http://localhost:8080/login', {
+                method: 'POST',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                credentials: 'include'  // Ensures that cookies (like JSESSIONID) are included
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Successfully logged in
+                    window.location.href = 'member.html';  // Redirect to a protected page after successful login
+                } else if (response.status === 401) {
+                    // Invalid login credentials
+                    document.getElementById('error-message').textContent = 'Invalid username or password';
+                } else {
+                    // Some other error occurred
+                    document.getElementById('error-message').textContent = 'An error occurred during login';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('error-message').textContent = 'An error occurred during login';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Registration</title>
+    <link rel="stylesheet" href="css/members.css">
+</head>
+<body>
+    <div class="container">
+
+        <!-- Member search section -->
+        <div class="search-container">
+            <h2>Search for a Member</h2>
+            <div class="form-group">
+                <label for="memberId">Member ID</label>
+                <input type="text" id="memberId" name="memberId" required>
+                <button id="searchMemberButton">Search</button>
+            </div>
+        </div>
+
+        <!-- Display fetched member information -->
+        <div id="memberInfo"></div>
+
+        </details>
+
+        <!-- Add session button -->
+        <div class="add-session">
+            <button id="addSessionButton">Add Session</button>
+        </div>
+
+                <!-- Member registration form wrapped in <details> for expand/collapse -->
+                    <details>
+                        <summary>Click to Register a New Member</summary>
+                        <div class="form-container">
+                            <h2>Member Registration</h2>
+                            <form id="memberForm">
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" id="name" name="name" required>
+                                    <div id="nameError" class="error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="phone">Phone</label>
+                                    <input type="tel" id="phone" name="phone" required>
+                                    <div id="phoneError" class="error"></div>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+        
+    </div>
+
+    <script src="js/api-utils.js"></script>
+    <script src="js/members/members.js"></script>
+    <script src="js/members/member-calls.js"></script>
+    <script src="js/subscriptions/subscribtion-calls.js"></script>
+</body>
+</html>
