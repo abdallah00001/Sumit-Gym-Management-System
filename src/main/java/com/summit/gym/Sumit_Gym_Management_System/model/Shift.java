@@ -30,7 +30,7 @@ public class Shift {
     private LocalDateTime finishDateTime;
 
     @OneToMany
-//            (cascade = CascadeType.MERGE)
+//            (cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 //    @OneToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH})
 //    @OneToMany(fetch = FetchType.EAGER)
     private List<Subscription> subscriptions = new ArrayList<>();

@@ -23,17 +23,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 //}
 
 
-
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")  // Apply to all endpoints
-                .allowedOrigins("null")  // Allow localhost with any port
+                .allowedOrigins("null", "http://localhost:*", "http://localhost:63342")  // Allow localhost with any port
+//                .allowedOrigins("*")  // Allow localhost with any port
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")  // Allow these methods
                 .allowedHeaders("*")  // Allow all headers
                 .exposedHeaders("*")
+                .allowCredentials(true)
                 .maxAge(3600);  // Cache preflight responses for 1 hour
     }
 }

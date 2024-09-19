@@ -28,8 +28,8 @@ public class SubscriptionTypeService {
         subscriptionTypeRepo.save(subscriptionType);
     }
 
-    public void delete(SubscriptionType type) {
-        subscriptionTypeRepo.delete(type);
+    public void delete(Long id) {
+        subscriptionTypeRepo.deleteById(id);
     }
 
 }

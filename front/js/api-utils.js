@@ -13,7 +13,12 @@ async function apiRequest(endpoint, options = {}, retries = 3) {
     const url = `${API_BASE_URL}${endpoint}`;
 
     try {
-        const response = await fetch(url, options);
+        const response = await fetch(url, {
+            credentials:"include",
+            options
+        });
+                    /////
+                    console.log(response.status)
         if (response.ok) {
             // Handle JSON or text responses
             const contentType = response.headers.get('content-type');
@@ -45,7 +50,9 @@ function handleErrorResponse(response) {
     if (response.status === 401) {
         // Redirect to login page or show unauthorized message
         showToast('Unauthorized access. Please log in.');
-        window.location.href = '/login.html';
+        // window.location.href = 'http://localhost:8080/login';
+        window.location.href = 'login3.html';
+
     } else if (response.status === 404) {
         showToast('Resource not found.');
     } else if (response.status === 500) {

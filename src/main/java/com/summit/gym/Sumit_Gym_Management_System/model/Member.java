@@ -1,10 +1,12 @@
 package com.summit.gym.Sumit_Gym_Management_System.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.summit.gym.Sumit_Gym_Management_System.enums.Gender;
 import com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil;
 import com.summit.gym.Sumit_Gym_Management_System.validation.annotations.Phone;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -37,6 +39,10 @@ public class Member {
     @NotBlank(message = "Phone" + NOT_BLANK)
     @Phone
     private String phone;
+
+//    @NotNull
+    @Enumerated(value = EnumType.STRING)
+    private Gender gender;
 
     @JsonIgnore
 //    @JsonIgnoreProperties("member")

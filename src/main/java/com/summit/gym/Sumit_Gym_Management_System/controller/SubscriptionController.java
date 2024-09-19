@@ -43,7 +43,7 @@ public class SubscriptionController {
         return subscriptionService.findTotalIncomeByDate(start, finish);
     }
 
-    @Operation(summary = "Get Subscription By its create date")
+    @Operation(summary = "Get Subscriptions created in provided date range")
     @GetMapping("/{start}/{finish}")
     public List<SubscriptionDto> findByCreatedDate(@PathVariable LocalDate start,
                                                 @PathVariable LocalDate finish) {
@@ -52,11 +52,13 @@ public class SubscriptionController {
 
     @Operation(summary = "Add date to attended days of Sub")
     @PutMapping("member/{memberId}/day/{date}")
-    public void addDay(@PathVariable
+    public ResponseEntity<String> addDay(@PathVariable
                        @PastOrPresent(message = "Date must be past or present")
                        LocalDate date,
                        @PathVariable Long memberId) {
         subscriptionService.addAttendedDay(memberId, date);
+        return ResponseEntity
+                .ok("Day added successfully");
     }
 
     @Operation(summary = "Get ALL subs saved by a certain user by his user name")

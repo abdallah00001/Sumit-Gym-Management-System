@@ -74,8 +74,8 @@ public class UserController {
                 .ok("User updated Successfully");
     }
 
-    @Operation(summary = "Deletes cashier by username... duh")
-    @DeleteMapping("/admin/{userName}")
+    @Operation(summary = "Deletes cashier by username")
+    @DeleteMapping("/cashiers/{userName}")
     public ResponseEntity<String> deleteCashier(@PathVariable String userName) {
         userService.deleteCashier(userName);
         return ResponseEntity

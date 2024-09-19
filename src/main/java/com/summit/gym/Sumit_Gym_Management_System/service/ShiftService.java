@@ -1,5 +1,7 @@
 package com.summit.gym.Sumit_Gym_Management_System.service;
 
+import com.summit.gym.Sumit_Gym_Management_System.exceptions.MemberNotFoundException;
+import com.summit.gym.Sumit_Gym_Management_System.model.Member;
 import com.summit.gym.Sumit_Gym_Management_System.model.Shift;
 import com.summit.gym.Sumit_Gym_Management_System.model.Subscription;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.MemberRepo;
@@ -17,7 +19,7 @@ public class ShiftService {
 
     private final ShiftRepo shiftRepo;
     private final SecurityUtil securityUtil;
-//    private final MemberRepo memberRepo;
+    private final MemberRepo memberRepo;
 
     public List<Shift> findAll() {
         return shiftRepo.findAll();
@@ -37,10 +39,13 @@ public class ShiftService {
 //    }
 
     @Transactional
-    public void addSubscription(Subscription subscription) {
-//        Shift shift = authenticationUtil.findCurrentShift();
-        Shift shift = shiftRepo.findById(1L).orElseThrow();
-        System.out.println(subscription);
+    public void addSubscription(Subscription subscription, Long memberId) {
+        Shift shift = securityUtil.findCurrentShift();
+//        Shift shift = shiftRepo.findById(1L).orElseThrow();
+//        System.out.println(subscription);
+        Member member = memberRepo.findById(memberId).orElseThrow(MemberNotFoundException::new);
+        subscription.setMember(member);
+        member.getSubscriptions().add(subscription);
         shift.getSubscriptions().add(subscription);
         shiftRepo.save(shift);
     }

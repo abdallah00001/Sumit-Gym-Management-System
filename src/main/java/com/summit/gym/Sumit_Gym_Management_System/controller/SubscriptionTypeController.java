@@ -35,9 +35,9 @@ public class SubscriptionTypeController {
     }
 
     @Operation(summary = "Delete a type")
-    @DeleteMapping
-    public ResponseEntity<String> deleteType(@RequestBody SubscriptionType type) {
-        subscriptionTypeService.delete(type);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteType(@PathVariable Long id) {
+        subscriptionTypeService.delete(id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body("Deleted successfully");

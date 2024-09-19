@@ -13,6 +13,7 @@ async function fetchMembers() {
         const members = await apiGet('/members');
         
         if (members.length) {
+            console.log(members)
             displayMembers(members);
         } else {
             showToast('No members found.');

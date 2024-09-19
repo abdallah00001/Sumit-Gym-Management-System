@@ -28,7 +28,7 @@ public class OnStartupConfig implements ApplicationRunner {
             // Create a default admin
             User admin = new User();
             admin.setUserName("admin");
-            admin.setPassword(passwordEncoder.encode("adminpassword"));
+            admin.setPassword(passwordEncoder.encode("123"));
 //            admin.setPassword(new BCryptPasswordEncoder().encode("adminpassword")); // Replace with a secure password
             admin.setRole(Role.ROLE_ADMIN);
             userRepo.save(admin);

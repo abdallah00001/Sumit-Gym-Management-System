@@ -22,9 +22,10 @@ public class ShiftController {
         return shiftService.findAll();
     }
 
-    @PostMapping("/sub")
-    public ResponseEntity<String> addSubscription(@RequestBody Subscription subscription) {
-        shiftService.addSubscription(subscription);
+    @PostMapping("/sub/{memberId}")
+    public ResponseEntity<String> addSubscription(@RequestBody Subscription subscription,
+                                                  @PathVariable Long memberId) {
+        shiftService.addSubscription(subscription, memberId);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body("Saved successfully");

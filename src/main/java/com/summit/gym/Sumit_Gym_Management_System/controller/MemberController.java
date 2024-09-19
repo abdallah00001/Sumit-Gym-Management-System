@@ -28,7 +28,7 @@ public class MemberController {
         return memberService.findAllMembers();
     }
 
-    @Operation(summary = "Gwt member by id")
+    @Operation(summary = "Get member by id")
     @GetMapping("/{id}")
     public MemberWithAttendanceDto findById(@PathVariable Long id) {
         return memberService.findMemberById(id);
