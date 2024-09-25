@@ -21,7 +21,7 @@ public class LogOutSuccessListener implements ApplicationListener<LogoutSuccessE
         User user = (User) event.getAuthentication().getPrincipal();
         Optional<Shift> activeShiftOptional = shiftRepo.findFirstByUserOrderByStartDateTimeDesc(user);
 
-        if (activeShiftOptional.isEmpty()) {
+        if (activeShiftOptional.isEmpty() || !activeShiftOptional.get().isActive()) {
             throw new IllegalArgumentException(
                     "Shift was already closed"
             );

@@ -10,6 +10,7 @@ public class ValidationUtil {
             Can't add the same date twice to the same subscription
             """;
     public static final String POSITIVE = " must be positive value";
+    public static final String POSITIVE_OR_ZERO = " must be positive or zero";
 
     public static final String UNIQUE_PHONE_CONSTRAINT = "unique_phone";
     public static final String UNIQUE_USERNAME_CONSTRAINT = "unique_username";

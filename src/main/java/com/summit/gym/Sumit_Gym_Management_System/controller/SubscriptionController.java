@@ -46,16 +46,16 @@ public class SubscriptionController {
     @Operation(summary = "Get Subscriptions created in provided date range")
     @GetMapping("/{start}/{finish}")
     public List<SubscriptionDto> findByCreatedDate(@PathVariable LocalDate start,
-                                                @PathVariable LocalDate finish) {
+                                                   @PathVariable LocalDate finish) {
         return subscriptionService.findSubscriptionsByCreateDate(start, finish);
     }
 
     @Operation(summary = "Add date to attended days of Sub")
     @PutMapping("member/{memberId}/day/{date}")
     public ResponseEntity<String> addDay(@PathVariable
-                       @PastOrPresent(message = "Date must be past or present")
-                       LocalDate date,
-                       @PathVariable Long memberId) {
+                                         @PastOrPresent(message = "Date must be past or present")
+                                         LocalDate date,
+                                         @PathVariable Long memberId) {
         subscriptionService.addAttendedDay(memberId, date);
         return ResponseEntity
                 .ok("Day added successfully");
@@ -72,6 +72,22 @@ public class SubscriptionController {
     public List<SubscriptionDto> findAllByMember(@PathVariable Long memberId) {
         return subscriptionService.findByMember(memberId);
     }
+
+    @PutMapping("/freeze/{subscriptionId}/{daysToFreeze}")
+    public ResponseEntity<String> freeze(@PathVariable Long subscriptionId,
+                                         @PathVariable int daysToFreeze) {
+        String message = subscriptionService.freezeSubscription(subscriptionId, daysToFreeze);
+        return ResponseEntity.ok(message);
+    }
+
+    @PutMapping("/unfreeze/{subscriptionId}")
+    public ResponseEntity<String> unfreeze(@PathVariable Long subscriptionId) {
+        String message = subscriptionService.unFreezeSubscription(subscriptionId);
+        return ResponseEntity.ok(message);
+    }
+
+
+
 
 
 }

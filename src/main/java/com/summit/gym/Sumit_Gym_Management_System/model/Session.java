@@ -22,10 +22,10 @@ public class Session {
 
     private int number;
 
-    @OneToMany
-    private Member member;
-
-    @OneToMany
-    private Coach coach;
+//    @OneToMany
+//    private Member member;
+//
+//    @OneToMany
+//    private Coach coach;
     
 }

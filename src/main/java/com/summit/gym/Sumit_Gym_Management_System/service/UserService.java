@@ -5,14 +5,11 @@ import com.summit.gym.Sumit_Gym_Management_System.enums.Role;
 import com.summit.gym.Sumit_Gym_Management_System.exceptions.UserNotFoundException;
 import com.summit.gym.Sumit_Gym_Management_System.model.User;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.UserRepo;
-import com.summit.gym.Sumit_Gym_Management_System.validation.validators.UserValidator;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.Errors;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,7 +19,7 @@ public class UserService {
     private final UserRepo userRepo;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final ModelMapper modelMapper;
-    private final UserValidator validator;
+
 
     private void encryptPassAndSaveUser(User user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));

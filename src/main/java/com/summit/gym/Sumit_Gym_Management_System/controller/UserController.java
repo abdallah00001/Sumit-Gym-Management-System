@@ -4,7 +4,6 @@ import com.summit.gym.Sumit_Gym_Management_System.dto.UserDto;
 import com.summit.gym.Sumit_Gym_Management_System.enums.Role;
 import com.summit.gym.Sumit_Gym_Management_System.model.User;
 import com.summit.gym.Sumit_Gym_Management_System.service.UserService;
-import com.summit.gym.Sumit_Gym_Management_System.validation.annotations.UniqueUserName;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

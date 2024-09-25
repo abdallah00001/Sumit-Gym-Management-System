@@ -52,7 +52,7 @@ public class Member {
 
     @JsonIgnore
     public Subscription getLatestSubscription() {
-        return !subscriptions.isEmpty() ?
+        return  !subscriptions.isEmpty() ?
                 subscriptions.getLast()
                 : null;
     }

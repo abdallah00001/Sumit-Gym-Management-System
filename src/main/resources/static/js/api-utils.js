@@ -21,9 +21,9 @@ async function apiRequest(endpoint, options = {}, retries = 0) {
         console.log(`fetch url: ${url}`)
         console.log(response.status)
 
-        //        if (response.redirected){
-        //                window.location.href = response.url;
-        //        }
+        if (response.redirected) {
+            window.location.href = response.url;
+        }
         if (response.ok) {
             // Handle JSON or text responses
             const contentType = response.headers.get('content-type');

@@ -81,7 +81,10 @@ public class GeneralExceptionHandler {
         StringBuilder builder = new StringBuilder();
         e.getConstraintViolations()
                 .forEach(constraintViolation ->
-                        builder.append(constraintViolation.getMessage()));
+                {
+                    builder.append(constraintViolation.getMessage());
+                    builder.append(System.lineSeparator());
+                });
         return builder.toString();
     }
 

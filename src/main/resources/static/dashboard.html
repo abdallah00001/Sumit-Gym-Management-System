@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -79,54 +80,59 @@
         }
     </style>
 </head>
+
 <body>
 
-<div class="header">
-    Welcome to the Dashboard
-</div>
-
-<div class="container">
-    <div class="welcome">
-        Hello, <span id="username">User</span>!
+    <div class="header">
+        Welcome to the Dashboard
     </div>
 
-    <div class="sections">
-        <div class="section">
-            <h3>Section 1</h3>
-            <a href="#">Go to Section 1</a>
+    <div class="container">
+        <div class="welcome">
+            Hello, <span id="username">User</span>!
         </div>
-        <div class="section">
-            <h3>Section 2</h3>
-            <a href="#">Go to Section 2</a>
+
+        <div class="sections">
+            <div class="section">
+                <h3>Section 1</h3>
+                <a href="#">Go to Section 1</a>
+            </div>
+            <div class="section">
+                <h3>Section 2</h3>
+                <a href="#">Go to Section 2</a>
+            </div>
         </div>
+
+        <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
-    <button class="logout-btn" onclick="logout()">Logout</button>
-</div>
+    <script>
+        // Placeholder for the username, can be replaced with actual dynamic value.
+        document.getElementById('username').innerText = 'User'; // Replace 'User' with actual username
 
-<script>
-    // Placeholder for the username, can be replaced with actual dynamic value.
-    document.getElementById('username').innerText = 'User'; // Replace 'User' with actual username
-
-    function logout() {
-        fetch('http://localhost:8080/logout', {
-        credentials:"include",
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }).then(response => {
-        console.log(response.status)
-        console.log('hello')
-<!--            if (response.ok) {-->
-<!--                window.location.href = '/Sumit-Gym-Management-System/static/login.html'; // Redirect to the login page after logout-->
-<!--            }-->
-            if (response.redirected) {
-                window.location.href = response.url; // Redirect to the login page after logout
-            }
-        }).catch(error => console.error('Error:', error));
-    }
-</script>
+        function logout() {
+            fetch('http://localhost:8080/logout', {
+                credentials: "include",
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            }).then(response => {
+                console.log(response.status)
+                console.log('hello')
+                // <!--            if (response.ok) {-->
+                // <!--                window.location.href = '/Sumit-Gym-Management-System/static/login.html'; // Redirect to the login page after logout-->
+                // <!--            }-->
+                // if (response.redirected) {
+                //     window.location.href = response.url; // Redirect to the login page after logout
+                // }
+                if (response.ok) {
+                    window.location.href = response.url;
+                }
+            }).catch(error => console.error('Error:', error));
+        }
+    </script>
 
 </body>
+
 </html>

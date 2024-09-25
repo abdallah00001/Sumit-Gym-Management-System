@@ -1,7 +1,8 @@
 package com.summit.gym.Sumit_Gym_Management_System.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil;
-import com.summit.gym.Sumit_Gym_Management_System.validation.groups.OnSave;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@ToString(exclude = {"expireDate", "isExpired"})
+@ToString(exclude = {"expireDate", "isExpired", "isFrozen"})
 @Builder
 public class Subscription {
 
@@ -29,7 +30,9 @@ public class Subscription {
 //    private int num;
 
     //    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
-    @ManyToOne
+//        @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.PERSIST})
+//    @ManyToOne
     private Member member;
 
     @ManyToOne
@@ -43,6 +46,9 @@ public class Subscription {
     @NotNull(message = "Must specify type")
     private SubscriptionType subscriptionType;
 
+    @ManyToOne
+    private Coach privateTrainer;
+
     private LocalDateTime createdAt;
 
     private LocalDate startDate;
@@ -55,12 +61,40 @@ public class Subscription {
     @PositiveOrZero(message = "Discount" + ValidationUtil.POSITIVE)
     private int discount;
 
-    @Positive(message = "Price" + ValidationUtil.POSITIVE,
-    groups = OnSave.class)
+    @Positive(message = "Price" + ValidationUtil.POSITIVE)
     private int finalPrice;
 
     @Transient
     private boolean isExpired;
+
+    @Transient
+    private boolean isFrozen;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Freeze> freezeHistory = new ArrayList<>();
+
+
+    //Allows validation of calculated objects from controller
+    @JsonCreator
+    public Subscription(
+            @JsonProperty("id") Long id,
+            @JsonProperty("createdAt") LocalDateTime createdAt,
+            @JsonProperty("startDate") LocalDate startDate,
+            @JsonProperty("expireDate") LocalDate expireDate,
+            @JsonProperty("attendedDays") List<LocalDate> attendedDays,
+            @JsonProperty("subscriptionType") SubscriptionType subscriptionType,
+            @JsonProperty("discount") int discount) {
+
+        this.id = id;
+        this.subscriptionType = subscriptionType;
+        this.discount = discount;
+        this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
+        this.startDate = (startDate != null) ? startDate : LocalDate.now();
+        this.expireDate = (expireDate != null) ? expireDate : calculateExpireDate();
+        this.attendedDays = (attendedDays != null) ? attendedDays : new ArrayList<>();
+        this.finalPrice = calculateFinalPrice();
+        this.isExpired = isExpired();
+    }
 
 
     public boolean isExpired() {
@@ -68,34 +102,104 @@ public class Subscription {
 //        return false;
     }
 
-//    public int getFinalPrice() {
-//        return subscriptionType.getPrice() - discount;
-////        return 1;
-//    }
+    public boolean isFrozen() {
+        Freeze latestFreeze = getLatestFreeze();
+        if (latestFreeze == null) return false;
+        //The finish date of freeze is normal day with session
+        return LocalDate.now().isBefore(latestFreeze.getFinishDate());
+    }
 
-//    public void setCreatedAt(LocalDateTime createdAt) {
-//        this.createdAt = LocalDateTime.now();
-//    }
-//
-//    public void setExpireDate(LocalDate expireDate) {
-//        this.expireDate = startDate.plusDays(subscriptionType.getDurationInDays());
+    public void freeze(int daysToFreeze) {
+        validateBeforeFreeze(daysToFreeze);
 
-//    }
+        expireDate = expireDate.plusDays(daysToFreeze);
+        freezeHistory.add(new Freeze(daysToFreeze));
+    }
+
+    private void validateBeforeFreeze(int daysToFreeze) {
+        if (isExpired()) {
+            throw new IllegalArgumentException("Subscription is expired");
+        }
+
+        if (isFrozen()) {
+            throw new IllegalArgumentException(
+                    "Subscription is already frozen"
+            );
+        }
+
+        //Checks if the new freeze days will exceed the freeze limit
+        int remainingFreezeLimitCount = getRemainingFreezeLimitCount();
+        if (remainingFreezeLimitCount < daysToFreeze) {
+            throw new IllegalArgumentException(String.format("""
+                            Freeze limit exceeded for this subscription
+                            Remaining limit: %d,
+                            Days provided: %d
+                            """,
+                    remainingFreezeLimitCount
+                    , daysToFreeze));
+        }
+    }
 
 
-    @PrePersist
-    @PreUpdate
-    public void setDates() {
-        createdAt = LocalDateTime.now();
-        startDate = LocalDate.now();
-        expireDate = startDate.plusDays(subscriptionType.getDurationInDays());
-        finalPrice = calculateFinalPrice();
-//        expireDate = LocalDate.now();
-//        expireDate = startDate.plusMonths(1);
+    //To re activate mid freeze
+    public void unFreeze() {
+        if (isExpired()) {
+            throw new IllegalArgumentException("""
+                    Freeze duration already passed,
+                    Subscription has expired After the freeze.
+                    """);
+        }
+        if (!isFrozen()) {
+            throw new IllegalArgumentException(
+                    "Subscription is not frozen"
+            );
+        }
+        Freeze latestFreeze = getLatestFreeze(); //Can't be null since isFrozen is called before
+
+        latestFreeze.setBreakDateTime(LocalDateTime.now());
+        latestFreeze.setFinishDate(LocalDate.now());
+        int daysFrozen = latestFreeze.getDaysFrozenCount();
+        expireDate = calculateExpireDate().plusDays(daysFrozen);
+
+    }
+
+    public int getRemainingFreezeLimitCount() {
+        return subscriptionType.getAllowedFreezeDays() - getDaysFrozenCount();
+    }
+
+    private int getDaysFrozenCount() {
+        return freezeHistory.stream().mapToInt(Freeze::getDaysFrozenCount)
+                .sum();
+    }
+
+    private Freeze getLatestFreeze() {
+        return !freezeHistory.isEmpty() ?
+                freezeHistory.getLast() :
+                null;
     }
 
     private int calculateFinalPrice() {
-        return subscriptionType.getPrice() - discount;
+        return privateTrainer == null ?
+                subscriptionType.getGeneralPrice() - discount :
+                subscriptionType.getPrivateTrainerPrice() - discount;
     }
 
+
+    private LocalDate calculateExpireDate() {
+        return startDate.plusDays(subscriptionType.getDurationInDays());
+    }
+
+
 }
+
+
+//    @PrePersist
+//    @PreUpdate
+//    public void setDates() {
+//        createdAt = LocalDateTime.now();
+//        startDate = LocalDate.now();
+//        expireDate = calculateExpireDate();
+//        finalPrice = calculateFinalPrice();
+////        expireDate = LocalDate.now();
+////        expireDate = startDate.plusMonths(1);
+//    }

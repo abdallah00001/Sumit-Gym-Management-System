@@ -1,6 +1,6 @@
 package com.summit.gym.Sumit_Gym_Management_System.validation.annotations;
 
-import com.summit.gym.Sumit_Gym_Management_System.validation.validators.UniqueUserNameValidator;
+import com.summit.gym.Sumit_Gym_Management_System.validation.validators.SubTypeValidator;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -10,11 +10,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
-@Constraint(validatedBy = UniqueUserNameValidator.class)
-@Target({ElementType.FIELD,ElementType.PARAMETER})
+@Constraint(validatedBy = SubTypeValidator.class)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface UniqueUserName {
-    String message() default "ANNOTATION:  User name already Exists";
+public @interface ValidSubscriptionType {
+    String message() default "Invalid type";
 
     Class<?>[] groups() default {};
 

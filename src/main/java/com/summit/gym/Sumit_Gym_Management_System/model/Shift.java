@@ -1,10 +1,7 @@
 package com.summit.gym.Sumit_Gym_Management_System.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@ToString(exclude = "subscriptions")
 @Builder
 public class Shift {
 
@@ -40,15 +38,16 @@ public class Shift {
     private boolean isActive = true;
 
 
-    public int calculateTotalMoney() {
+    private int calculateTotalMoney() {
         return subscriptions.stream()
                 .mapToInt(Subscription::getFinalPrice)
                 .sum();
     }
 
-    public void close() {
+    public int close() {
         finishDateTime = LocalDateTime.now();
         isActive = false;
+        return calculateTotalMoney();
     }
 
     @PrePersist
