@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search with Filters</title>
+</head>
+<body>
+    <h1>Search with Multiple Filters</h1>
+
+    <form id="filterForm">
+        <!-- Numeric ID Filter -->
+        <label for="memberId">Member ID:</label>
+        <input type="number" id="memberId" name="memberId" placeholder="Enter Member ID">
+
+        <!-- Payment Type Filter -->
+        <label for="paymentType">Payment Type:</label>
+        <select id="paymentType" name="paymentType">
+            <option value="">Select Payment Type</option>
+            <option value="cash">Cash</option>
+            <option value="visa">Visa</option>
+        </select>
+
+        <!-- User Dropdown (fetched from server) -->
+        <label for="userSelect">User:</label>
+        <select id="userSelect" name="user">
+            <option value="">Select User</option>
+        </select>
+
+        <!-- Trainer Dropdown (fetched from server) -->
+        <label for="trainerSelect">Trainer:</label>
+        <select id="trainerSelect" name="trainer">
+            <option value="">Select Trainer</option>
+        </select>
+
+        <!-- Expired Check-box -->
+        <label for="expiredCheck">Expired:</label>
+        <input type="checkbox" id="expiredCheck" name="expired">
+
+        <!-- Frozen Check-box -->
+        <label for="frozenCheck">Frozen:</label>
+        <input type="checkbox" id="frozenCheck" name="frozen">
+
+        <button type="button" onclick="filterResults()">Search</button>
+    </form>
+
+    <div id="results">
+        <!-- Results will be displayed here -->
+    </div>
+
+
+
+    <!-- add return filter  -->
+    <script src="./js/fetch.js"></script>
+</body>
+</html>

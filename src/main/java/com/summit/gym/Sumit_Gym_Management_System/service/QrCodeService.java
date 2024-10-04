@@ -8,15 +8,16 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.awt.print.PrinterJob;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.util.Base64;
 
 @Service
 public class QrCodeService {
+
+    private final String QrSaveFolderPath = System.getProperty("user.dir") + File.separator;
+
 
     public String generateQrCode(Long value) throws WriterException, IOException {
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
@@ -39,7 +40,8 @@ public class QrCodeService {
         return Base64.getEncoder().encodeToString(qrCodeBytes);
     }
 
-    public void saveQrCodeToFile(Long value, String filePath) throws WriterException, IOException {
+    public String saveQrCodeToFile(Long value) throws WriterException, IOException {
+        String filePath = QrSaveFolderPath + value.toString() + ".png";
         QRCodeWriter qrCodeWriter = new QRCodeWriter();
         BitMatrix bitMatrix = qrCodeWriter.encode(value.toString(), BarcodeFormat.QR_CODE, 200, 200);
 
@@ -51,6 +53,7 @@ public class QrCodeService {
         }
 
         ImageIO.write(image, "png", new File(filePath));
+        return filePath;
     }
 
 //    public void printQrCode(Long value) throws WriterException, IOException {
@@ -87,7 +90,7 @@ public class QrCodeService {
         QrCodeService qrCodeService = new QrCodeService();
 //        String s = qrCodeService.generateQrCode(1L);
 //        System.out.println(s);
-        qrCodeService.saveQrCodeToFile(1L, "D:\\java-projects\\Sumit-Gym-Management-System\\qr.png");
+        qrCodeService.saveQrCodeToFile(1L);
 //        qrCodeService.saveQrCodeToFile(1L, ".");
     }
 

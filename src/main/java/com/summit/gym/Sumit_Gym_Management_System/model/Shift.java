@@ -11,9 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
+@EqualsAndHashCode(callSuper = false)
 @ToString(exclude = "subscriptions")
 @Builder
-public class Shift {
+public class Shift extends BaseEntity{
+
+    //TODO:: Double check refund related processes
 
     @Id
     @GeneratedValue
@@ -33,21 +36,30 @@ public class Shift {
 //    @OneToMany(fetch = FetchType.EAGER)
     private List<Subscription> subscriptions = new ArrayList<>();
 
-    private int totalMoney;
+    @OneToMany
+    private List<Refund> refunds;
+
+    private int totalRevenue;
 
     private boolean isActive = true;
 
 
-    private int calculateTotalMoney() {
-        return subscriptions.stream()
+    private int calculateTotalRevenue() {
+        int subscriptionRevenue = subscriptions.stream()
                 .mapToInt(Subscription::getFinalPrice)
                 .sum();
+
+        int refundedAmount = refunds.stream()
+                .mapToInt(Refund::getMoneyRefunded)
+                .sum();
+
+        return subscriptionRevenue - refundedAmount;
     }
 
     public int close() {
         finishDateTime = LocalDateTime.now();
         isActive = false;
-        return calculateTotalMoney();
+        return calculateTotalRevenue();
     }
 
     @PrePersist
@@ -57,3 +69,5 @@ public class Shift {
 
 
 }
+
+

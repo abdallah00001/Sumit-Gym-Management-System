@@ -1,7 +1,11 @@
 package com.summit.gym.Sumit_Gym_Management_System.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
+import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
+import com.summit.gym.Sumit_Gym_Management_System.exceptions.InvalidSubscriptionStatusException;
 import com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -12,38 +16,39 @@ import org.hibernate.validator.constraints.UniqueElements;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus.ACTIVE;
+import static com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus.FROZEN;
+
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-@ToString(exclude = {"expireDate", "isExpired", "isFrozen"})
+@ToString(exclude = {"expireDate"})
 @Builder
-public class Subscription {
+public class Subscription extends BaseEntity{
 
     @Id
     @GeneratedValue
     private Long id;
 
-//    private int num;
-
-    //    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
-//        @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.PERSIST})
+    @NotNull(message = "Member" + ValidationUtil.NOT_NULL)
     @ManyToOne(cascade = {CascadeType.PERSIST})
-//    @ManyToOne
     private Member member;
 
-    @ManyToOne
+    @NotNull(message = "Payment type" + ValidationUtil.NOT_NULL)
+    @Enumerated(value = EnumType.STRING)
     private PaymentType paymentType;
 
     @ManyToOne
     private User user = new User();
 
-    //    @ManyToOne(cascade = {CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
     @ManyToOne
-    @NotNull(message = "Must specify type")
+//    @NotNull(message = "Subscription type" + ValidationUtil.NOT_NULL)
     private SubscriptionType subscriptionType;
 
     @ManyToOne
@@ -55,27 +60,35 @@ public class Subscription {
 
     private LocalDate expireDate;
 
+    @ElementCollection
     @UniqueElements(message = ValidationUtil.UNIQUE_DATES)
     private List<LocalDate> attendedDays = new ArrayList<>();
 
     @PositiveOrZero(message = "Discount" + ValidationUtil.POSITIVE)
     private int discount;
 
-    @Positive(message = "Price" + ValidationUtil.POSITIVE)
+//    @Positive(message = "Price" + ValidationUtil.POSITIVE)
+    @PositiveOrZero(message = "Price" + ValidationUtil.POSITIVE_OR_ZERO)
     private int finalPrice;
 
-    @Transient
-    private boolean isExpired;
+    @JsonIgnore
+    private boolean isCancelled;
 
     @Transient
-    private boolean isFrozen;
+    private SubscriptionStatus status;
+
+
+
 
     @OneToMany(cascade = CascadeType.ALL)
     private List<Freeze> freezeHistory = new ArrayList<>();
 
+    private String notes;
 
+
+    //Calculated fields are now automatically populated when received in controller
     //Allows validation of calculated objects from controller
-    @JsonCreator
+/*    @JsonCreator
     public Subscription(
             @JsonProperty("id") Long id,
             @JsonProperty("createdAt") LocalDateTime createdAt,
@@ -90,19 +103,32 @@ public class Subscription {
         this.discount = discount;
         this.createdAt = (createdAt != null) ? createdAt : LocalDateTime.now();
         this.startDate = (startDate != null) ? startDate : LocalDate.now();
-        this.expireDate = (expireDate != null) ? expireDate : calculateExpireDate();
         this.attendedDays = (attendedDays != null) ? attendedDays : new ArrayList<>();
+        this.expireDate = (expireDate != null) ? expireDate : calculateExpireDate();
         this.finalPrice = calculateFinalPrice();
-        this.isExpired = isExpired();
+        this.status = getStatus();
+    }*/
+
+
+    //Frozen and Expired need to be calculated while cancelled is persisted
+    public SubscriptionStatus getStatus() {
+        SubscriptionStatus status = ACTIVE;
+        if (isCancelled) {
+            status = SubscriptionStatus.CANCELLED;
+        } else if (isExpired()) {
+            status = SubscriptionStatus.EXPIRED;
+        } else if (isFrozen()) {
+            status = SubscriptionStatus.FROZEN;
+        }
+        return status;
     }
 
 
-    public boolean isExpired() {
+    private boolean isExpired() {
         return !expireDate.isAfter(LocalDate.now());
-//        return false;
     }
 
-    public boolean isFrozen() {
+    private boolean isFrozen() {
         Freeze latestFreeze = getLatestFreeze();
         if (latestFreeze == null) return false;
         //The finish date of freeze is normal day with session
@@ -111,20 +137,16 @@ public class Subscription {
 
     public void freeze(int daysToFreeze) {
         validateBeforeFreeze(daysToFreeze);
-
         expireDate = expireDate.plusDays(daysToFreeze);
         freezeHistory.add(new Freeze(daysToFreeze));
     }
 
     private void validateBeforeFreeze(int daysToFreeze) {
-        if (isExpired()) {
-            throw new IllegalArgumentException("Subscription is expired");
-        }
+        SubscriptionStatus status = getStatus();
 
-        if (isFrozen()) {
-            throw new IllegalArgumentException(
-                    "Subscription is already frozen"
-            );
+        if (!status.equals(ACTIVE)) {
+            throw new InvalidSubscriptionStatusException(status,
+                    "Only ACTIVE subscriptions can be frozen");
         }
 
         //Checks if the new freeze days will exceed the freeze limit
@@ -143,24 +165,36 @@ public class Subscription {
 
     //To re activate mid freeze
     public void unFreeze() {
-        if (isExpired()) {
-            throw new IllegalArgumentException("""
-                    Freeze duration already passed,
-                    Subscription has expired After the freeze.
-                    """);
-        }
-        if (!isFrozen()) {
-            throw new IllegalArgumentException(
-                    "Subscription is not frozen"
+        SubscriptionStatus status = getStatus();
+        if (!status.equals(FROZEN)) {
+            throw new InvalidSubscriptionStatusException(status,
+                    "Couldn't unfreeze subscription because it is not frozen"
             );
         }
-        Freeze latestFreeze = getLatestFreeze(); //Can't be null since isFrozen is called before
+
+        //Can't be null since isFrozen is called before with null check included
+        Freeze latestFreeze = getLatestFreeze();
 
         latestFreeze.setBreakDateTime(LocalDateTime.now());
         latestFreeze.setFinishDate(LocalDate.now());
         int daysFrozen = latestFreeze.getDaysFrozenCount();
-        expireDate = calculateExpireDate().plusDays(daysFrozen);
+//        expireDate = calculateExpireDate().plusDays(daysFrozen);
+        //Ex: if initial freeze days were 20, and we broke it after only 5
+        //Subtract 15 days from expire date
+        expireDate = expireDate.minusDays((latestFreeze.getInitialDurationInDays() - daysFrozen));
+    }
 
+    //Use of Period to account for days per month variation
+    public Period getRemainingPeriod() {
+        return Period.between(LocalDate.now(), expireDate);
+    }
+
+    public Period getpassedPeriod() {
+        return Period.between(startDate, LocalDate.now());
+    }
+
+    public int getAttendedDaysCount() {
+        return attendedDays.size();
     }
 
     public int getRemainingFreezeLimitCount() {
@@ -179,27 +213,25 @@ public class Subscription {
     }
 
     private int calculateFinalPrice() {
-        return privateTrainer == null ?
-                subscriptionType.getGeneralPrice() - discount :
-                subscriptionType.getPrivateTrainerPrice() - discount;
+        return subscriptionType.getPrice() - discount;
     }
 
 
     private LocalDate calculateExpireDate() {
-        return startDate.plusDays(subscriptionType.getDurationInDays());
+        return startDate.plus(subscriptionType.getPeriod());
     }
 
 
+    @PrePersist
+    @PreUpdate
+    public void setDates() {
+        startDate = LocalDate.now();
+        createdAt = LocalDateTime.now();
+        expireDate = calculateExpireDate();
+        finalPrice = calculateFinalPrice();
+
+
+    }
 }
 
 
-//    @PrePersist
-//    @PreUpdate
-//    public void setDates() {
-//        createdAt = LocalDateTime.now();
-//        startDate = LocalDate.now();
-//        expireDate = calculateExpireDate();
-//        finalPrice = calculateFinalPrice();
-////        expireDate = LocalDate.now();
-////        expireDate = startDate.plusMonths(1);
-//    }

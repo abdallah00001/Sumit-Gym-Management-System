@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regestration</title>
+    <link rel="stylesheet" href="./css/reg.css">
+</head>
+<body>
+    <!-- <div class="header">
+
+    </div> -->
+
+
+    
+
+    <div class="main">
+        <div class="regestration">
+            <h2>personal information</h2>
+
+            <label >full name</label>
+            <br>
+            <input type="text" placeholder="first name" class="input1" id="fullName" required>
+            <br>
+            <label>gender</label>
+            <br>
+            <select required class="input1" id="gender">
+            <option value="" disabled selected>Select gender</option>
+            <option>Male</option>
+            <option>Female</option>
+            </select>
+            
+            <br>
+            <label>birth Date</label>
+            <br>
+            <input type="date" placeholder="Enter expiry date" required class="input1" id="birthDate">
+
+            <br>
+            <label>phone number :</label>
+            <br>
+            <input type="number" placeholder="Whatsapp Number" class="input1" id="phoneNumber" required>
+            <br>
+           
+        </div>
+
+        <div class="client-info">
+         <h2>membership information</h2>
+
+            <label>Subscription Type :</label>
+            <br>
+            <select required class="input1" id="subscriptionType">
+                <option value="" disabled selected>Select Type</option>
+            </select>
+            <br>
+            
+            <!-- <label>personal trainer name : </label>
+            <br>
+            <input type="text" placeholder="full name" class="input1"> -->
+            
+            <br>
+            <label>personal Trainer Name :</label>
+            <br>
+            <select required class="input1" id="trainer">
+            <option value="" selected >None</option>
+            </select>
+
+
+            <br>
+            <label>Payment Type:</label>
+            <br>
+            <select required class="input1" id="paymentType">
+            <option value="" disabled selected >Select Type</option>
+            <option>Cash</option>
+            <option>Visa</option>
+            </select>
+
+            <br>
+            <label>discount</label>
+            <br>
+            <input type="number" placeholder="discount" class="input1" id="discount" value="0">
+            <br>
+            <label>cash out:</label>
+            <br>
+            <!-- <input type="number" placeholder="total" class="input1"> -->
+            <div type="number" placeholder="total" class="input1" id="cashOut" ></div> 
+        
+
+
+            <div class="button-borders">
+                <button class="primary-button" id="register-button" type="submit">Regestre</button>
+            </div>
+        </div>
+
+        <div class="comments">
+            <h2>comments</h2>
+            <textarea id="" cols="50" rows="10" placeholder="write a comment" class="input2"></textarea>
+        </div>
+    </div>
+
+    <script src="js/api-calls/api-utils.js"></script>
+    <script src="js/api-calls/subscriptions/subscribtion-calls.js"></script>
+    <script src="js/api-calls/subscription-types/subscriptionType-calls.js"></script>
+    <script src="js/api-calls/coach/coach-calls.js"></script>
+    <script src="js/pages/page-utils.js "></script>
+    <script src="js/pages/reg.js"></script>
+
+</body>
+</html>

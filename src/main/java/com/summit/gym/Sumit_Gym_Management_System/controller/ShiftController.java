@@ -1,5 +1,6 @@
 package com.summit.gym.Sumit_Gym_Management_System.controller;
 
+import com.summit.gym.Sumit_Gym_Management_System.dto.ShiftDto;
 import com.summit.gym.Sumit_Gym_Management_System.model.Shift;
 import com.summit.gym.Sumit_Gym_Management_System.model.Subscription;
 import com.summit.gym.Sumit_Gym_Management_System.service.ShiftService;
@@ -22,18 +23,18 @@ public class ShiftController {
     private final ShiftService shiftService;
 
     @GetMapping
-    public List<Shift> findAll() {
+    public List<ShiftDto> findAll() {
         return shiftService.findAll();
     }
 
-    @PostMapping("/sub/{memberId}")
-    public ResponseEntity<String> addSubscription(@RequestBody Subscription subscription,
-                                                  @PathVariable Long memberId) {
-        shiftService.addSubscription(subscription, memberId);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body("Saved successfully");
-    }
+//    @PostMapping("/sub/{memberId}")
+//    public ResponseEntity<String> addSubscription(@RequestBody Subscription subscription,
+//                                                  @PathVariable Long memberId) {
+//        shiftService.addSubscription(subscription, memberId);
+//        return ResponseEntity
+//                .status(HttpStatus.CREATED)
+//                .body("Saved successfully");
+//    }
 
     @PostMapping
     public void startNewShift(@RequestBody Shift shift) {

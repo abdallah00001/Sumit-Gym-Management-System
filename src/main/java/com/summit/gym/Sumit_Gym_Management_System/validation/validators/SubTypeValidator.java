@@ -8,6 +8,9 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 
@@ -19,14 +22,13 @@ public class SubTypeValidator extends BaseEntityValidator
     public boolean isValid(SubscriptionType subscriptionType, ConstraintValidatorContext context) {
         boolean isValid = true;
 
-        if (subscriptionType.getGeneralPrice() > subscriptionType.getPrivateTrainerPrice()) {
-            isValid = false;
-            addConstraintViolation(context,
-                    "Subscription price with private trainer must be greater than general price",
-                    "privateTrainerPrice");
-        }
+        //Can't practically compare 2 periods because days variations between months
+        //So we compare the total days
+        long subscriptionLengthInDays = ChronoUnit.DAYS
+                .between(LocalDate.now(), LocalDate.now().plus(subscriptionType.getPeriod()));
 
-        if (subscriptionType.getDurationInDays() <= subscriptionType.getAllowedFreezeDays()) {
+        if (subscriptionLengthInDays < subscriptionType.getAllowedFreezeDays()) {
+
             isValid = false;
             addConstraintViolation(context,
                     "Subscription duration must be longer than allowed freeze days",
@@ -39,6 +41,7 @@ public class SubTypeValidator extends BaseEntityValidator
     public void initialize(ValidSubscriptionType constraintAnnotation) {
         ConstraintValidator.super.initialize(constraintAnnotation);
     }
+
 
 
 

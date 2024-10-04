@@ -1,24 +1,34 @@
 package com.summit.gym.Sumit_Gym_Management_System.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.zxing.WriterException;
+import com.summit.gym.Sumit_Gym_Management_System.dto.MemberDto;
 import com.summit.gym.Sumit_Gym_Management_System.dto.SubscriptionDto;
+import com.summit.gym.Sumit_Gym_Management_System.dto_mappers.MemberMapper;
+import com.summit.gym.Sumit_Gym_Management_System.dto_mappers.SubscriptionMapper;
+import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
+import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
+import com.summit.gym.Sumit_Gym_Management_System.exceptions.InvalidSubscriptionStatusException;
 import com.summit.gym.Sumit_Gym_Management_System.exceptions.MemberNotFoundException;
-import com.summit.gym.Sumit_Gym_Management_System.model.Member;
-import com.summit.gym.Sumit_Gym_Management_System.model.Shift;
-import com.summit.gym.Sumit_Gym_Management_System.model.Subscription;
-import com.summit.gym.Sumit_Gym_Management_System.model.User;
+import com.summit.gym.Sumit_Gym_Management_System.model.*;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.MemberRepo;
-import com.summit.gym.Sumit_Gym_Management_System.reposiroty.ShiftRepo;
+import com.summit.gym.Sumit_Gym_Management_System.reposiroty.RefundRepo;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.SubscriptionRepo;
+import com.summit.gym.Sumit_Gym_Management_System.reposiroty.SubscriptionTypeRepo;
+import com.summit.gym.Sumit_Gym_Management_System.specification.SubscriptionSpecification;
+import com.summit.gym.Sumit_Gym_Management_System.utils.DateTimeFormatterUtil;
 import com.summit.gym.Sumit_Gym_Management_System.utils.SessionAttributesManager;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.util.List;
+
+import static com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -29,68 +39,95 @@ public class SubscriptionService {
 
     private final SubscriptionRepo subscriptionRepo;
     private final MemberRepo memberRepo;
-    private final ShiftRepo shiftRepo;
     private final SessionAttributesManager sessionAttributesManager;
-    private final ModelMapper modelMapper;
-    private final EntityManager entityManager;
-
-
-    private void validateAndSave(Subscription subscription) {
-//        if (subscription.getFinalPrice() <= 0) {
-//            throw new IllegalArgumentException(
-//                    "Price" + ValidationUtil.POSITIVE
-//            );
-//        }
-        subscriptionRepo.save(subscription);
-    }
+    private final SubscriptionMapper subscriptionMapper;
+    private final MemberMapper memberMapper;
+    private final RefundRepo refundRepo;
+    private final SubscriptionTypeRepo subscriptionTypeRepo;
+    private final QrCodeService qrCodeService;
 
     public List<SubscriptionDto> findAll() {
         return subscriptionRepo.findAll()
                 .stream()
-                .map(subscription -> modelMapper.map(subscription, SubscriptionDto.class))
+                .map(subscriptionMapper::toSubscriptionDto)
                 .toList();
     }
 
+    public List<Subscription> findAllSubs() {
+        return subscriptionRepo.findAll();
+    }
+
+    private String calculateCashOut(Subscription subscription, int paidTotal) {
+        int change = paidTotal - subscription.getFinalPrice();
+        if (change < 0) {
+            throw new IllegalArgumentException(
+                    "Amount paid is lower than subscription price"
+            );
+        }
+        return String.format("""
+                Change to return: %d
+                """, change);
+    }
 
     @Transactional
-    public void save(Subscription subscription, Long memberId) {
-//        Member member = memberRepo.findById(memberId).orElseThrow(MemberNotFoundException::new);
-
-//        Member member = memberRepo.findById(memberId).orElse(newMember);
+    public String save(Subscription subscription, int paidTotal, Long subscriptionTypeId) {
         Shift shift;
         User user;
-
         Member member = subscription.getMember();
-
         Long memberID = member.getId();
-        if (memberID != null) {
-            member = entityManager.merge(subscription.getMember());
-            Subscription latestSubscription = member.getLatestSubscription();
+        SubscriptionType subscriptionType = subscriptionTypeRepo.findById(subscriptionTypeId)
+                .orElseThrow(() -> new EntityNotFoundException("Subscription type wasn't found."));
+        subscription.setSubscriptionType(subscriptionType);
+        String cashOutMessage = "";
+        if (subscription.getPaymentType().equals(PaymentType.Cash)) {
+            cashOutMessage = calculateCashOut(subscription, paidTotal);
+        }
 
-            if (latestSubscription != null && !latestSubscription.isExpired()) {
-                throw new IllegalStateException("User already has an active subscription");
+        //Checking if member is new or not
+        if (memberID != null) {
+            member = memberRepo.findById(memberID).orElseThrow(MemberNotFoundException::new);
+            //Should never be null if member is not new
+            Subscription latestSubscription = member.getLatestSubscription();
+//            if (latestSubscription == null) {
+//                throw new IllegalArgumentException("Member is not subscribed");
+//            }
+            if (latestSubscription != null) {
+                SubscriptionStatus status = latestSubscription.getStatus();
+
+                //If the latest sub is frozen or active can't create new one
+                if (!status.equals(EXPIRED) && !status.equals(CANCELLED)) {
+                    throw new IllegalStateException(
+                            String.format("User already has an registered subscription that is %s", status)
+                    );
+                }
             }
 
         }
 
         //Manage bidirectional mappings
-//        Shift shift = shiftRepo.findById(1L).orElseThrow();
         shift = sessionAttributesManager.getCurrentShift();
         shift.getSubscriptions().add(subscription);
         user = sessionAttributesManager.getUser();
         subscription.setUser(user);
-        member.getSubscriptions().add(subscription);
+        member.addSubscription(subscription);
         subscription.setMember(member);
-        validateAndSave(subscription);
+        Subscription savedSub = subscriptionRepo.save(subscription);
+        Long savedMemberId = savedSub.getMember().getId();
+        String savedQrLocation = null;
+        try {
+            savedQrLocation = qrCodeService.saveQrCodeToFile(savedMemberId);
+        } catch (WriterException | IOException e) {
+            throw new RuntimeException(e);
+        }
+        WhatsAppMessengerService.sendCode(member.getPhone(), savedQrLocation);
+        return cashOutMessage;
     }
 
 
     public List<SubscriptionDto> findSubscriptionsByCreateDate(LocalDate startDate,
                                                                LocalDate finishDate) {
         return subscriptionRepo.findByCreatedAtBetween(startDate, finishDate)
-                .stream().map(
-                        subscription -> modelMapper
-                                .map(subscription, SubscriptionDto.class))
+                .stream().map(subscriptionMapper::toSubscriptionDto)
                 .toList();
     }
 
@@ -103,30 +140,38 @@ public class SubscriptionService {
                 .sum();
     }
 
-
-    public void addAttendedDay(Long memberId, LocalDate attendedDate) {
-        // IN case added date is always date of day
-        //        LocalDate attendedDate = LocalDate.now();
-
-        //Have to fetch 1st to make sure our entity is up to date
-        Member member = memberRepo.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
-        Subscription latestSubscription = member.getLatestSubscription();
+    private static void validateStatus(Subscription latestSubscription) {
         if (latestSubscription == null) {
             throw new IllegalStateException("""
                     Member is new and has now subscriptions,
                     please add a subscription and try again
                     """);
         }
-        if (latestSubscription.isExpired()) {
-            throw new IllegalStateException("""
-                    Member's subscription is expired,
-                    please renew subscription and try again
-                    """);
+
+        SubscriptionStatus status = latestSubscription.getStatus();
+        if (!status.equals(ACTIVE)) {
+            if (status.equals(FROZEN)) {
+                throw new InvalidSubscriptionStatusException(status,
+                        "Pleas unfreeze to add new sessions");
+            }
+            throw new InvalidSubscriptionStatusException(status);
         }
+
+    }
+
+    public MemberDto addAttendedDay(Long memberId, LocalDate attendedDate) {
+
+        if (attendedDate == null) attendedDate = LocalDate.now();
+
+        //Have to fetch 1st to make sure our entity is up to date
+        Member member = memberRepo.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        Subscription latestSubscription = member.getLatestSubscription();
+        //Make sure sub is active
+        validateStatus(latestSubscription);
         latestSubscription.getAttendedDays().add(attendedDate);
         subscriptionRepo.save(latestSubscription);
-
+        return memberMapper.mapToMemberDto(member);
     }
 
 
@@ -134,16 +179,13 @@ public class SubscriptionService {
         Member member = memberRepo.findById(memberId).orElseThrow(MemberNotFoundException::new);
         List<Subscription> subs = subscriptionRepo.findByMember(member);
         return subs.stream()
-                .map(subscription -> modelMapper
-                        .map(subscription, SubscriptionDto.class))
+                .map(subscriptionMapper::toSubscriptionDto)
                 .toList();
     }
 
     public List<SubscriptionDto> findByUserName(String userName) {
         return subscriptionRepo.findByUserName(userName)
-                .stream().map(
-                        subscription -> modelMapper
-                                .map(subscription, SubscriptionDto.class))
+                .stream().map(subscriptionMapper::toSubscriptionDto)
                 .toList();
     }
 
@@ -178,6 +220,59 @@ public class SubscriptionService {
                         """
                 , subscription.getExpireDate().toString(),
                 subscription.getRemainingFreezeLimitCount());
+    }
+
+
+    public List<SubscriptionDto> filter(Member member, PaymentType paymentType, Coach coach
+            , User user, LocalDate startDate, LocalDate finishDate, Boolean isExpiredBool, Boolean isFrozenBool) {
+
+        List<Subscription> subscriptions = subscriptionRepo
+                .findAll(SubscriptionSpecification.getSpecs(member, paymentType,
+                        coach, user, startDate, finishDate, isExpiredBool, isFrozenBool));
+
+        return subscriptions.stream()
+                .map(subscriptionMapper::toSubscriptionDto).toList();
+    }
+
+    //Contains 2 save operations so @Transactional is used
+    @Transactional
+    public String refund(Long subscriptionId, int moneyRefunded) {
+        Subscription subscription = subscriptionRepo.findById(subscriptionId)
+                .orElseThrow(() -> new EntityNotFoundException("Couldn't find subscription"));
+
+        if (subscription.getFinalPrice() < moneyRefunded) {
+            throw new IllegalArgumentException(
+                    "Refunded money can't be more than the subscription price"
+            );
+        }
+
+        SubscriptionStatus status = subscription.getStatus();
+        if (status.equals(CANCELLED) || status.equals(EXPIRED)) {
+            throw new InvalidSubscriptionStatusException(
+                    status, "Subscription is already %s".formatted(status)
+            );
+        }
+
+        Shift shift = sessionAttributesManager.getCurrentShift();
+        subscription.setCancelled(true);
+        Refund refund = new Refund();
+        refund.setMoneyRefunded(moneyRefunded);
+        refund.setSubscription(subscription);
+        Refund savedRefund = refundRepo.save(refund);
+        shift.getRefunds().add(savedRefund);
+        subscriptionRepo.save(subscription);
+        return "";
+    }
+
+    public static void main(String[] args) throws JsonProcessingException {
+        LocalDate exp = LocalDate.of(2025, 5, 12);
+        System.out.println(Period.between(LocalDate.now(), exp));
+        Period amountToAdd = Period.of(0,3,0);
+        Period period = Period.ofDays(50);
+
+        System.out.println(DateTimeFormatterUtil.periodToString(amountToAdd));
+        System.out.println(DateTimeFormatterUtil.periodToString(period));
+
     }
 
 

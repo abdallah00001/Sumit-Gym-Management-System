@@ -19,13 +19,13 @@ import static com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUt
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@ToString(exclude = "subscriptions")
+@ToString(exclude = "latestSubscription")
 @Builder
 @Table(uniqueConstraints = {
         @UniqueConstraint(name = ValidationUtil.UNIQUE_PHONE_CONSTRAINT,
                 columnNames = "phone")
 })
-public class Member {
+public class Member extends BaseEntity{
 
     @Id
     @GeneratedValue
@@ -40,22 +40,38 @@ public class Member {
     @Phone
     private String phone;
 
-//    @NotNull
+    @NotNull(message = "Gender" + NOT_BLANK)
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
 
     @JsonIgnore
-//    @JsonIgnoreProperties("member")
-    @OneToMany
-            (cascade = CascadeType.ALL)
-    private List<Subscription> subscriptions = new ArrayList<>();
+    @OneToOne
+    private Subscription latestSubscription;
 
     @JsonIgnore
     public Subscription getLatestSubscription() {
-        return  !subscriptions.isEmpty() ?
-                subscriptions.getLast()
-                : null;
+        return latestSubscription;
     }
+
+    public void addSubscription(Subscription subscription) {
+        latestSubscription = subscription;
+    }
+
+
+
+
+    //    @JsonIgnore
+////    @JsonIgnoreProperties("member")
+//    @OneToMany
+//            (cascade = CascadeType.ALL)
+//    private List<Subscription> subscriptions = new ArrayList<>();
+
+//    @JsonIgnore
+//    public Subscription getLatestSubscription() {
+//        return  !subscriptions.isEmpty() ?
+//                subscriptions.getLast()
+//                : null;
+//    }
 
 
 }

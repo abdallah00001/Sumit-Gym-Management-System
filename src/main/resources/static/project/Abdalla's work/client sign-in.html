@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Sign-in</title>
+    <link rel="stylesheet" href="./css/sign-in.css">
+    <link rel="stylesheet" href="./css/members.css">
+    <!-- <link rel="stylesheet" href="./css/reg.css"> -->
+</head>
+<body>
+    <!-- <div class="header">
+
+    </div> -->
+
+    <div class="main-search">
+        <div class="brutalist-container">
+            <input
+              placeholder="TYPE HERE"
+              class="brutalist-input smooth-type"
+              type="text" id="memberId" name="memberId" required
+              />
+            <label class="brutalist-label" for="memberId" >search</label>
+            
+            <br>
+            <br>
+            <div class="button-borders">
+                <button class="primary-button" id="searchMemberButton">Search</button>
+            </div>
+       
+            
+        </div>
+    </div>
+
+<div class="main-info">
+    <div class="memberInfo" id="memberInfo">
+        <!-- last update with chat gpt 
+            <div class="info-card">
+            <h2>User Information</h2>
+            <p><span class="label">Name:</span> <span id="userName"></span></p>
+            <p><span class="label">Phone:</span> <span id="userPhone"></span></p>
+            <p><span class="label">Gender:</span> <span id="userGender"></span></p>
+    
+            <h2>Subscription Details</h2>
+            <p><span class="label">Subscription Type:</span> <span id="subscriptionType"></span></p>
+            <p><span class="label">Start Date:</span> <span id="startDate"></span></p>
+            <p><span class="label">End Date:</span> <span id="endDate"></span></p>
+            <p><span class="label">Attended Period:</span> <span id="attendedPeriod"></span></p>
+            <p><span class="label">Remaining Period:</span> <span id="remainingPeriod"></span></p>
+        </div> -->
+    </div>
+</div>
+
+<div class="btns">
+    <div class="btn2">
+
+        <!-- <div class="mem">
+            <div class="memberInfo" id="memberInfo"></div>
+        </div> -->
+        <br>
+        <br>
+        <label >Return</label> 
+        <br>
+        <!-- write a condition to make sure that the returned value is lower than the total value -->
+        <input type="number" placeholder="Returned value" id="" class="input1">
+        <br>
+        <div class="button-borders">
+            <button class="primary-button" id="searchMemberButton">Return</button>
+        </div>
+        
+
+        <br>
+        <label for="">discount</label>
+        
+        <input type="number" name="" id=""class="input1">
+        <div class="button-borders">
+            <button class="primary-button">Add</button>
+        </div>
+
+        <br>
+        <label>Renew</label> 
+        
+        <select name="" id="" class="input1">
+            <option value="">subs</option>
+        
+        </select>
+
+        <br>
+        <input type="number" placeholder="CashOut" name="" id=""class="input1">
+        <br>
+
+        <div class="button-borders">
+            <button class="primary-button" id="searchMemberButton">Renew</button>
+        </div>
+            
+        
+    </div>  
+</div>
+
+<div class="btns-1">
+<div class="btn1">
+    <div class="button-borders">
+        <button class="primary-button" id="searchMemberButton">Submit</button>
+    </div>
+
+    <div class="button-borders">
+        <button class="primary-button" id="searchMemberButton">Freez</button>
+    </div>
+
+
+    <div class="button-borders">
+        <button class="primary-button" id="searchMemberButton">Un-Freez</button>
+    </div>
+
+</div>
+</div>
+
+    <script src="./js/members.js"></script>
+</body>
+</html>

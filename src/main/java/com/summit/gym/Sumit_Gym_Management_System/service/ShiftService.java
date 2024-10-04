@@ -1,5 +1,7 @@
 package com.summit.gym.Sumit_Gym_Management_System.service;
 
+import com.summit.gym.Sumit_Gym_Management_System.dto.ShiftDto;
+import com.summit.gym.Sumit_Gym_Management_System.dto_mappers.ShiftDtoMapper;
 import com.summit.gym.Sumit_Gym_Management_System.exceptions.MemberNotFoundException;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
 import com.summit.gym.Sumit_Gym_Management_System.model.Shift;
@@ -20,9 +22,11 @@ public class ShiftService {
     private final ShiftRepo shiftRepo;
     private final SessionAttributesManager sessionAttributesManager;
     private final MemberRepo memberRepo;
+    private final ShiftDtoMapper shiftDtoMapper;
 
-    public List<Shift> findAll() {
-        return shiftRepo.findAll();
+    public List<ShiftDto> findAll() {
+        return shiftRepo.findAll().stream().map(shiftDtoMapper::toShiftDto)
+                .toList();
     }
 
     public void startNewShift(Shift shift) {
@@ -45,7 +49,7 @@ public class ShiftService {
 //        System.out.println(subscription);
         Member member = memberRepo.findById(memberId).orElseThrow(MemberNotFoundException::new);
         subscription.setMember(member);
-        member.getSubscriptions().add(subscription);
+        member.addSubscription(subscription);
         shift.getSubscriptions().add(subscription);
         shiftRepo.save(shift);
     }

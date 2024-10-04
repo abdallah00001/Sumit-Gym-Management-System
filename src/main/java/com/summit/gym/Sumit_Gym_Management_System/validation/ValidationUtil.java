@@ -5,6 +5,7 @@ import java.util.List;
 public class ValidationUtil {
 
     public static final String NOT_BLANK = " can't be empty";
+    public static final String NOT_NULL = " must be specified";
     public static final String UNIQUE_DATES = """
             Date already exists
             Can't add the same date twice to the same subscription

@@ -1,12 +1,12 @@
 package com.summit.gym.Sumit_Gym_Management_System.service;
 
 import com.summit.gym.Sumit_Gym_Management_System.dto.UserDto;
+import com.summit.gym.Sumit_Gym_Management_System.dto_mappers.UserMapper;
 import com.summit.gym.Sumit_Gym_Management_System.enums.Role;
 import com.summit.gym.Sumit_Gym_Management_System.exceptions.UserNotFoundException;
 import com.summit.gym.Sumit_Gym_Management_System.model.User;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.UserRepo;
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +18,7 @@ public class UserService {
 
     private final UserRepo userRepo;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ModelMapper modelMapper;
+    private final UserMapper userMapper;
 
 
     private void encryptPassAndSaveUser(User user) {
@@ -29,8 +29,7 @@ public class UserService {
 
     public List<UserDto> findAllCashiers() {
         return userRepo.findByRole(Role.ROLE_CASHIER)
-                .stream().map(
-                        user -> modelMapper.map(user, UserDto.class))
+                .stream().map(userMapper::mapToUserDto)
                 .toList();
     }
 
@@ -42,14 +41,14 @@ public class UserService {
     public UserDto findAdmin() {
         User admin = userRepo.findAdmin()
                 .orElseThrow(UserNotFoundException::new);
-        return modelMapper.map(admin, UserDto.class);
+        return userMapper.mapToUserDto(admin);
     }
 
 
     public UserDto findByUserName(String userName) {
         User user = userRepo.findByUserName(userName)
                 .orElseThrow(UserNotFoundException::new);
-        return modelMapper.map(user, UserDto.class);
+        return userMapper.mapToUserDto(user);
     }
 
 

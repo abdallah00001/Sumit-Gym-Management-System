@@ -1,19 +1,15 @@
 package com.summit.gym.Sumit_Gym_Management_System.controller;
 
-import com.summit.gym.Sumit_Gym_Management_System.dto.MemberWithAttendanceDto;
+import com.summit.gym.Sumit_Gym_Management_System.dto.MemberDto;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
-import com.summit.gym.Sumit_Gym_Management_System.model.Shift;
-import com.summit.gym.Sumit_Gym_Management_System.model.Subscription;
 import com.summit.gym.Sumit_Gym_Management_System.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.PastOrPresent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -24,13 +20,13 @@ public class MemberController {
 
     @Operation(summary = "Get ALL members")
     @GetMapping
-    public List<MemberWithAttendanceDto> findAllMembers() {
+    public List<MemberDto> findAllMembers() {
         return memberService.findAllMembers();
     }
 
     @Operation(summary = "Get member by id")
     @GetMapping("/{id}")
-    public MemberWithAttendanceDto findById(@PathVariable Long id) {
+    public MemberDto findById(@PathVariable Long id) {
         return memberService.findMemberById(id);
     }
 

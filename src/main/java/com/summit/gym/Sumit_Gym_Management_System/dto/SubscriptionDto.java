@@ -1,36 +1,45 @@
 package com.summit.gym.Sumit_Gym_Management_System.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
+import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
-import com.summit.gym.Sumit_Gym_Management_System.model.PaymentType;
-import com.summit.gym.Sumit_Gym_Management_System.model.SubscriptionType;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
+@EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-public class SubscriptionDto {
+//@Getter
+//@Setter
+@Data
+public class SubscriptionDto extends BaseDto{
+
+    //TODO::
+    // 1-use subTypeDto
+    // 2-format date time
+    // 3-Member summary dto
+    // 4- attended days cont
 
     private Long id;
+    @JsonIgnoreProperties("latestSubscription")
     private Member member;
     private PaymentType paymentType;
     private UserDto userDto;
-    private SubscriptionType subscriptionType;
-    private LocalDateTime createdAt;
+    private SubscriptionTypeDto subscriptionTypeDto;
+    private String createdAtString;
     private LocalDate startDate;
     private LocalDate expireDate;
-    private List<LocalDate> attendedDays = new ArrayList<>();
-    private boolean isExpired;
+    //    private List<LocalDate> attendedDays = new ArrayList<>();
+    private int attendedDaysCount;
     private int discount;
     private int finalPrice;
+    private String notes;
+    private SubscriptionStatus status;
 
 
 }

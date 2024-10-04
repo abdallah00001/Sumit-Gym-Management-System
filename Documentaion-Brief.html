@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="SwaggerIU" />
+  <title>SwaggerUI</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@4.4.1/swagger-ui.css" />
+</head>
+
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://unpkg.com/swagger-ui-dist@4.4.1/swagger-ui-bundle.js" crossorigin></script>
+  <script src="https://unpkg.com/swagger-ui-dist@4.4.1/swagger-ui-standalone-preset.js" crossorigin></script>
+  <script>
+    window.onload = () => {
+      window.ui = SwaggerUIBundle({
+        // spec: JSON.parse("data.json"),
+        spec: data,
+        dom_id: '#swagger-ui',
+      });
+    };
+  </script>
+  <script>
+    const data =
+    {
+      "openapi": "3.0.1",
+      "info": {
+        "title": "OpenAPI definition",
+        "version": "v0"
+      },
+      "servers": [
+        {
+          "url": "http://localhost:8080",
+          "description": "Generated server url"
+        }
+      ],
+      "paths": {
+        "/api/sub/unfreeze/{subscriptionId}": {
+          "put": {
+            "tags": [
+              "subscription-controller"
+            ],
+            "operationId": "unfreeze",
+            "parameters": [
+              {
+                "name": "subscriptionId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub/refund/{subId}/{moneyRefunded}": {
+          "put": {
+            "tags": [
+              "subscription-controller"
+            ],
+            "operationId": "refund",
+            "parameters": [
+              {
+                "name": "subId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              {
+                "name": "moneyRefunded",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub/member/{memberId}": {
+          "put": {
+            "tags": [
+              "subscription-controller"
+            ],
+            "summary": "Add date to attended days of Sub",
+            "operationId": "addDay",
+            "parameters": [
+              {
+                "name": "memberId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "$ref": "#/components/schemas/MemberDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub/freeze/{subscriptionId}/{daysToFreeze}": {
+          "put": {
+            "tags": [
+              "subscription-controller"
+            ],
+            "operationId": "freeze",
+            "parameters": [
+              {
+                "name": "subscriptionId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              },
+              {
+                "name": "daysToFreeze",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/shifts/close/{counterMoney}": {
+          "put": {
+            "tags": [
+              "shift-controller"
+            ],
+            "operationId": "closeShift",
+            "parameters": [
+              {
+                "name": "counterMoney",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/members/{id}": {
+          "get": {
+            "tags": [
+              "member-controller"
+            ],
+            "summary": "Get member by id",
+            "operationId": "findById",
+            "parameters": [
+              {
+                "name": "id",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            ],
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "$ref": "#/components/schemas/MemberDto"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub/sub-type/{subTypeId}/cashout/{paidTotal}": {
+          "post": {
+            "tags": [
+              "subscription-controller"
+            ],
+            "summary": "Save new Subscription",
+            "operationId": "save",
+            "parameters": [
+              {
+                "name": "paidTotal",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              },
+              {
+                "name": "subTypeId",
+                "in": "path",
+                "required": true,
+                "schema": {
+                  "type": "integer",
+                  "format": "int64"
+                }
+              }
+            ],
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Subscription"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub-type/admin/save": {
+          "post": {
+            "tags": [
+              "subscription-type-controller"
+            ],
+            "summary": "Save new type",
+            "operationId": "save_1",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/SubscriptionType"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/coach/admin/save": {
+          "post": {
+            "tags": [
+              "coach-controller"
+            ],
+            "operationId": "save_2",
+            "requestBody": {
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/Coach"
+                  }
+                }
+              },
+              "required": true
+            },
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub": {
+          "get": {
+            "tags": [
+              "subscription-controller"
+            ],
+            "summary": "Get all subscriptions",
+            "operationId": "findAll",
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SubscriptionDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/sub-type": {
+          "get": {
+            "tags": [
+              "subscription-type-controller"
+            ],
+            "summary": "Get all subscription types",
+            "description": "User for subscription type drop down menu ",
+            "operationId": "getAll",
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/SubscriptionTypeDto"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "/api/coach": {
+          "get": {
+            "tags": [
+              "coach-controller"
+            ],
+            "operationId": "findAllCoaches",
+            "responses": {
+              "200": {
+                "description": "OK",
+                "content": {
+                  "*/*": {
+                    "schema": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Coach"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        //   "/api/sub-type/{id}": {
+        //     "delete": {
+        //       "tags": [
+        //         "subscription-type-controller"
+        //       ],
+        //       "summary": "Delete a type",
+        //       "operationId": "deleteType",
+        //       "parameters": [
+        //         {
+        //           "name": "id",
+        //           "in": "path",
+        //           "required": true,
+        //           "schema": {
+        //             "type": "integer",
+        //             "format": "int64"
+        //           }
+        //         }
+        //       ],
+        //       "responses": {
+        //         "200": {
+        //           "description": "OK",
+        //           "content": {
+        //             "*/*": {
+        //               "schema": {
+        //                 "type": "string"
+        //               }
+        //             }
+        //           }
+        //         }
+        //       }
+        //     }
+        //   }
+      },
+      "components": {
+        "schemas": {
+          "MemberDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "gender": {
+                "type": "string",
+                "enum": [
+                  "Male",
+                  "Female"
+                ]
+              },
+              "subscriptionForMemberDto": {
+                "$ref": "#/components/schemas/SubscriptionForMemberDto"
+              }
+            }
+          },
+          "SubscriptionForMemberDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "typeSummaryDto": {
+                "$ref": "#/components/schemas/SubscriptionTypeSummaryDto"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "expireDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "passedPeriodString": {
+                "type": "string"
+              },
+              "remainingPeriodString": {
+                "type": "string"
+              },
+              "sessionsAttended": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          },
+          "SubscriptionTypeSummaryDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              }
+            }
+          },
+          "Member": {
+            "required": [
+              "gender",
+              "name",
+              "phone"
+            ],
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "maxLength": 50,
+                "minLength": 3,
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              },
+              "gender": {
+                "type": "string",
+                "enum": [
+                  "Male",
+                  "Female"
+                ]
+              }
+            }
+          },
+          "GrantedAuthority": {
+            "type": "object",
+            "properties": {
+              "authority": {
+                "type": "string"
+              }
+            }
+          },
+          "User": {
+            "required": [
+              "password"
+            ],
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "userName": {
+                "type": "string",
+                "writeOnly": true
+              },
+              "password": {
+                "maxLength": 2147483647,
+                "minLength": 5,
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "ROLE_ADMIN",
+                  "ROLE_CASHIER"
+                ]
+              },
+              "username": {
+                "type": "string"
+              },
+              "authorities": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/GrantedAuthority"
+                }
+              },
+              "enabled": {
+                "type": "boolean"
+              },
+              "credentialsNonExpired": {
+                "type": "boolean"
+              },
+              "accountNonExpired": {
+                "type": "boolean"
+              },
+              "accountNonLocked": {
+                "type": "boolean"
+              }
+            }
+          },
+          "Coach": {
+            "required": [
+              "name",
+              "phone"
+            ],
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
+              }
+            }
+          },
+          "Freeze": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "initialDurationInDays": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "finishDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "breakDateTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "daysFrozenCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "datesFrozen": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "date"
+                }
+              }
+            }
+          },
+          "Subscription": {
+            "required": [
+              "member",
+              "paymentType"
+            ],
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "member": {
+                "$ref": "#/components/schemas/Member"
+              },
+              "paymentType": {
+                "type": "string",
+                "enum": [
+                  "Cash",
+                  "Visa"
+                ]
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              },
+              "subscriptionType": {
+                "$ref": "#/components/schemas/SubscriptionType"
+              },
+              "privateTrainer": {
+                "$ref": "#/components/schemas/Coach"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "expireDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "attendedDays": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "format": "date"
+                }
+              },
+              "discount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "finalPrice": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ACTIVE",
+                  "FROZEN",
+                  "CANCELLED",
+                  "EXPIRED"
+                ]
+              },
+              "freezeHistory": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Freeze"
+                }
+              },
+              "notes": {
+                "type": "string"
+              },
+              "attendedDaysCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "remainingFreezeLimitCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "remainingPeriod": {
+                "type": "object",
+                "properties": {
+                  "years": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "months": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "zero": {
+                    "type": "boolean"
+                  },
+                  "negative": {
+                    "type": "boolean"
+                  },
+                  "units": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "durationEstimated": {
+                          "type": "boolean"
+                        },
+                        "duration": {
+                          "type": "object",
+                          "properties": {
+                            "seconds": {
+                              "type": "integer",
+                              "format": "int64"
+                            },
+                            "zero": {
+                              "type": "boolean"
+                            },
+                            "nano": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "negative": {
+                              "type": "boolean"
+                            },
+                            "positive": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "timeBased": {
+                          "type": "boolean"
+                        },
+                        "dateBased": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "chronology": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "calendarType": {
+                        "type": "string"
+                      },
+                      "isoBased": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              },
+              "getpassedPeriod": {
+                "type": "object",
+                "properties": {
+                  "years": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "months": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "zero": {
+                    "type": "boolean"
+                  },
+                  "negative": {
+                    "type": "boolean"
+                  },
+                  "units": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "durationEstimated": {
+                          "type": "boolean"
+                        },
+                        "duration": {
+                          "type": "object",
+                          "properties": {
+                            "seconds": {
+                              "type": "integer",
+                              "format": "int64"
+                            },
+                            "zero": {
+                              "type": "boolean"
+                            },
+                            "nano": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "negative": {
+                              "type": "boolean"
+                            },
+                            "positive": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "timeBased": {
+                          "type": "boolean"
+                        },
+                        "dateBased": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "chronology": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "calendarType": {
+                        "type": "string"
+                      },
+                      "isoBased": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "SubscriptionType": {
+            "required": [
+              "name",
+              "periodType"
+            ],
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "price": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "periodLength": {
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              },
+              "allowedFreezeDays": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "periodType": {
+                "type": "string",
+                "enum": [
+                  "Daily",
+                  "Monthly"
+                ]
+              },
+              "period": {
+                "type": "object",
+                "properties": {
+                  "years": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "months": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "days": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "zero": {
+                    "type": "boolean"
+                  },
+                  "negative": {
+                    "type": "boolean"
+                  },
+                  "units": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "durationEstimated": {
+                          "type": "boolean"
+                        },
+                        "duration": {
+                          "type": "object",
+                          "properties": {
+                            "seconds": {
+                              "type": "integer",
+                              "format": "int64"
+                            },
+                            "zero": {
+                              "type": "boolean"
+                            },
+                            "nano": {
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "negative": {
+                              "type": "boolean"
+                            },
+                            "positive": {
+                              "type": "boolean"
+                            }
+                          }
+                        },
+                        "timeBased": {
+                          "type": "boolean"
+                        },
+                        "dateBased": {
+                          "type": "boolean"
+                        }
+                      }
+                    }
+                  },
+                  "chronology": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "calendarType": {
+                        "type": "string"
+                      },
+                      "isoBased": {
+                        "type": "boolean"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "Refund": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "subscription": {
+                "$ref": "#/components/schemas/Subscription"
+              },
+              "moneyRefunded": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "Shift": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "user": {
+                "$ref": "#/components/schemas/User"
+              },
+              "startDateTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "finishDateTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "subscriptions": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Subscription"
+                }
+              },
+              "refunds": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Refund"
+                }
+              },
+              "totalRevenue": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            }
+          },
+          "SubscriptionDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "member": {
+                "$ref": "#/components/schemas/Member"
+              },
+              "paymentType": {
+                "type": "string",
+                "enum": [
+                  "Cash",
+                  "Visa"
+                ]
+              },
+              "userDto": {
+                "$ref": "#/components/schemas/UserDto"
+              },
+              "subscriptionTypeDto": {
+                "$ref": "#/components/schemas/SubscriptionTypeDto"
+              },
+              "createdAtString": {
+                "type": "string"
+              },
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "expireDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "attendedDaysCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "discount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "finalPrice": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "notes": {
+                "type": "string"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "ACTIVE",
+                  "FROZEN",
+                  "CANCELLED",
+                  "EXPIRED"
+                ]
+              }
+            }
+          },
+          "SubscriptionTypeDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "name": {
+                "type": "string"
+              },
+              "periodString": {
+                "type": "string"
+              },
+              "price": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          },
+          "UserDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "userName": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string",
+                "enum": [
+                  "ROLE_ADMIN",
+                  "ROLE_CASHIER"
+                ]
+              }
+            }
+          },
+          "ShiftDto": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "userDto": {
+                "$ref": "#/components/schemas/UserDto"
+              },
+              "startDateTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "finishDateTime": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "subscriptionDtos": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/SubscriptionDto"
+                }
+              },
+              "totalMoney": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "active": {
+                "type": "boolean"
+              }
+            }
+          },
+          "ReportDto": {
+            "type": "object",
+            "properties": {
+              "membersAttendedCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "memberThatPaidCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "membersThatRefundedCount": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "totalRevenue": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "totalAmountRefunded": {
+                "type": "integer",
+                "format": "int64"
+              }
+            }
+          }
+        }
+      }
+    }
+
+
+
+  </script>
+</body>
+
+</html>

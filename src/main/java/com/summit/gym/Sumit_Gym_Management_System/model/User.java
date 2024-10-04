@@ -5,10 +5,7 @@ import com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +15,7 @@ import java.util.List;
 
 import static com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil.NOT_BLANK;
 
+@EqualsAndHashCode(callSuper = false)
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -27,7 +25,7 @@ import static com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUt
         @UniqueConstraint(name = ValidationUtil.UNIQUE_USERNAME_CONSTRAINT,
                 columnNames = "userName")
 })
-public class User implements UserDetails {
+public class User extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
