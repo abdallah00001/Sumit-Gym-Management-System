@@ -42,6 +42,8 @@ public class SubscriptionType extends BaseEntity{
     @NotNull(message = "Monthly or Daily" + ValidationUtil.NOT_NULL)
     private PeriodType periodType;
 
+    private boolean forPrivateTrainer;
+
 
     //Use of period for day count accuracy
     //ex: 1 month can have 29 days while another can have 31

@@ -31,6 +31,11 @@ public class MemberService {
         return memberMapper.mapToMemberDto(member);
     }
 
+    public MemberDto findByPhone(String phone) {
+        Member member = memberRepo.findByPhone(phone).orElseThrow(MemberNotFoundException::new);
+        return memberMapper.mapToMemberDto(member);
+    }
+
     public void saveMember(Member member) {
         memberRepo.save(member);
     }

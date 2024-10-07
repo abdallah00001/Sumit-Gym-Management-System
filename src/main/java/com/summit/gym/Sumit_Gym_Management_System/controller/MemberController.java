@@ -3,6 +3,7 @@ package com.summit.gym.Sumit_Gym_Management_System.controller;
 import com.summit.gym.Sumit_Gym_Management_System.dto.MemberDto;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
 import com.summit.gym.Sumit_Gym_Management_System.service.MemberService;
+import com.summit.gym.Sumit_Gym_Management_System.validation.annotations.Phone;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,14 @@ public class MemberController {
         return memberService.findMemberById(id);
     }
 
+    @GetMapping("/phone/{phone}")
+    public MemberDto findByPhone(@PathVariable
+                                 @Phone
+                                 String phone) {
+        return memberService.findByPhone(phone);
+    }
+
+
     @Operation(summary = "Save new member")
     @PostMapping
     public ResponseEntity<String> saveMember(@RequestBody @Valid Member member) {
@@ -38,6 +47,7 @@ public class MemberController {
                 .status(HttpStatus.CREATED)
                 .body("Member created Successfully");
     }
+
 
     @Operation(summary = "Delete a member by id")
     @DeleteMapping

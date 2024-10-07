@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +45,8 @@ public class Member extends BaseEntity{
     @NotNull(message = "Gender" + NOT_BLANK)
     @Enumerated(value = EnumType.STRING)
     private Gender gender;
+
+    private LocalDate birthDate;
 
     @JsonIgnore
     @OneToOne

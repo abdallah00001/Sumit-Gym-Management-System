@@ -1,6 +1,7 @@
 package com.summit.gym.Sumit_Gym_Management_System.dto_mappers;
 
 import com.summit.gym.Sumit_Gym_Management_System.dto.MemberDto;
+import com.summit.gym.Sumit_Gym_Management_System.dto.SubscriptionDto;
 import com.summit.gym.Sumit_Gym_Management_System.dto.SubscriptionForMemberDto;
 import com.summit.gym.Sumit_Gym_Management_System.enums.Gender;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
@@ -45,14 +46,16 @@ public class MemberMapper extends BaseMapper {
             @Override
             public MemberDto convert(MappingContext<Member, MemberDto> context) {
                 Member member = context.getSource();
-                SubscriptionForMemberDto subscriptionForMemberDto = null;
+//                SubscriptionForMemberDto subscriptionForMemberDto = null;
+                SubscriptionDto subscriptionDto = null;
                 Subscription latestSubscription = member.getLatestSubscription();
                 Gender gender = member.getGender();
                 if (latestSubscription != null) {
-                    subscriptionForMemberDto = subscriptionMapper.toSubForMemberDto(latestSubscription);
+//                    subscriptionForMemberDto = subscriptionMapper.toSubForMemberDto(latestSubscription);
+                    subscriptionDto = subscriptionMapper.toSubscriptionDto(latestSubscription);
                 }
                 return new MemberDto(member.getId(), member.getName(), member.getPhone(),
-                        gender, subscriptionForMemberDto);
+                        gender, member.getBirthDate(), subscriptionDto);
             }
         };
     }

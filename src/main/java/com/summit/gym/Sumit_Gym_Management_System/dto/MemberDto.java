@@ -20,8 +20,10 @@ public class MemberDto extends BaseDto{
     private String name;
     private String phone;
     private Gender gender;
-    private SubscriptionForMemberDto subscriptionForMemberDto;
-
+    private LocalDate birthDate;
+    //    private SubscriptionForMemberDto subscriptionForMemberDto;
+    @JsonIgnoreProperties("member")
+    private SubscriptionDto subscriptionDto;
 
 //    public static Converter<Member, MemberWithAttendanceDto> toDtoConverter() {
 //        return new Converter<Member, MemberWithAttendanceDto>() {

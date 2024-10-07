@@ -83,6 +83,13 @@ public class SubscriptionService {
             cashOutMessage = calculateCashOut(subscription, paidTotal);
         }
 
+        if (subscription.getPrivateTrainer() != null && !subscription.getSubscriptionType().isForPrivateTrainer()) {
+            throw new IllegalArgumentException("This subscription type does not support private trainers");
+        } else if (subscription.getPrivateTrainer() == null && subscription.getSubscriptionType().isForPrivateTrainer()) {
+            throw new IllegalArgumentException("Pleas add a private trainer");
+        }
+
+
         //Checking if member is new or not
         if (memberID != null) {
             member = memberRepo.findById(memberID).orElseThrow(MemberNotFoundException::new);

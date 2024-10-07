@@ -21,7 +21,7 @@ public class SubscriptionDto extends BaseDto{
 
     //TODO::
     // 1-use subTypeDto
-    // 2-format date time
+//     2-format date time
     // 3-Member summary dto
     // 4- attended days cont
 
