@@ -3,13 +3,16 @@ package com.summit.gym.Sumit_Gym_Management_System.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
 import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
+import com.summit.gym.Sumit_Gym_Management_System.model.Freeze;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
+import com.summit.gym.Sumit_Gym_Management_System.model.Payment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = false)
 @AllArgsConstructor
@@ -40,6 +43,7 @@ public class SubscriptionDto extends BaseDto{
     private int finalPrice;
     private String notes;
     private SubscriptionStatus status;
-
+    private List<Freeze> freezeHistory;
+    private List<Payment> payments;
 
 }

@@ -40,12 +40,12 @@ public class Subscription extends BaseEntity{
     @ManyToOne(cascade = {CascadeType.PERSIST})
     private Member member;
 
-    @NotNull(message = "Payment type" + ValidationUtil.NOT_NULL)
-    @Enumerated(value = EnumType.STRING)
-    private PaymentType paymentType;
+//    @NotNull(message = "Payment type" + ValidationUtil.NOT_NULL)
+//    @Enumerated(value = EnumType.STRING)
+//    private PaymentType paymentType;
 
     @ManyToOne
-    private User user = new User();
+    private User user;
 
     @ManyToOne
 //    @NotNull(message = "Subscription type" + ValidationUtil.NOT_NULL)
@@ -64,12 +64,12 @@ public class Subscription extends BaseEntity{
     @UniqueElements(message = ValidationUtil.UNIQUE_DATES)
     private List<LocalDate> attendedDays = new ArrayList<>();
 
-    @PositiveOrZero(message = "Discount" + ValidationUtil.POSITIVE)
-    private int discount;
+//    @PositiveOrZero(message = "Discount" + ValidationUtil.POSITIVE)
+//    private int discount;
 
 //    @Positive(message = "Price" + ValidationUtil.POSITIVE)
-    @PositiveOrZero(message = "Price" + ValidationUtil.POSITIVE_OR_ZERO)
-    private int finalPrice;
+//    @PositiveOrZero(message = "Price" + ValidationUtil.POSITIVE_OR_ZERO)
+//    private int finalPrice;
 
     @JsonIgnore
     private boolean isCancelled;
@@ -77,11 +77,12 @@ public class Subscription extends BaseEntity{
     @Transient
     private SubscriptionStatus status;
 
-
-
-
     @OneToMany(cascade = CascadeType.ALL)
     private List<Freeze> freezeHistory = new ArrayList<>();
+
+    @OneToMany(cascade = CascadeType.PERSIST)
+    private List<Payment> payments = new ArrayList<>();
+
 
     private String notes;
 
@@ -123,6 +124,9 @@ public class Subscription extends BaseEntity{
         return status;
     }
 
+    public Payment getLatestPayment() {
+        return payments.getLast();
+    }
 
     private boolean isExpired() {
         return !expireDate.isAfter(LocalDate.now());
@@ -212,14 +216,15 @@ public class Subscription extends BaseEntity{
                 null;
     }
 
-    private int calculateFinalPrice() {
-        return subscriptionType.getPrice() - discount;
-    }
+//    private int calculateFinalPrice() {
+//        return subscriptionType.getPrice() - discount;
+//    }
 
 
     private LocalDate calculateExpireDate() {
         return startDate.plus(subscriptionType.getPeriod());
     }
+
 
 
     @PrePersist
@@ -228,7 +233,7 @@ public class Subscription extends BaseEntity{
         startDate = LocalDate.now();
         createdAt = LocalDateTime.now();
         expireDate = calculateExpireDate();
-        finalPrice = calculateFinalPrice();
+//        finalPrice = calculateFinalPrice();
 
 
     }

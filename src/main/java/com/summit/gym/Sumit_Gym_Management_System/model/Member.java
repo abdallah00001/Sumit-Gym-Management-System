@@ -27,7 +27,7 @@ import static com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUt
         @UniqueConstraint(name = ValidationUtil.UNIQUE_PHONE_CONSTRAINT,
                 columnNames = "phone")
 })
-public class Member extends BaseEntity{
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -49,19 +49,17 @@ public class Member extends BaseEntity{
     private LocalDate birthDate;
 
     @JsonIgnore
-    @OneToOne
-    private Subscription latestSubscription;
+    @OneToMany
+    private List<Subscription> subscriptions = new ArrayList<>();
 
     @JsonIgnore
     public Subscription getLatestSubscription() {
-        return latestSubscription;
+        return subscriptions.getLast();
     }
 
     public void addSubscription(Subscription subscription) {
-        latestSubscription = subscription;
+        subscriptions.add(subscription);
     }
-
-
 
 
     //    @JsonIgnore

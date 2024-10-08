@@ -50,7 +50,7 @@ public class ShiftService {
         Member member = memberRepo.findById(memberId).orElseThrow(MemberNotFoundException::new);
         subscription.setMember(member);
         member.addSubscription(subscription);
-        shift.getSubscriptions().add(subscription);
+//        shift.getSubscriptions().add(subscription);
         shiftRepo.save(shift);
     }
 

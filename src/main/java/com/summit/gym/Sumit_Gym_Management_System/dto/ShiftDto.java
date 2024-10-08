@@ -21,8 +21,8 @@ public class ShiftDto extends BaseDto{
 
     private LocalDateTime finishDateTime;
 
-    @JsonIgnoreProperties("userDto")
-    private List<SubscriptionDto> subscriptionDtos;
+//    @JsonIgnoreProperties("userDto")
+//    private List<SubscriptionDto> subscriptionDtos;
 
     private int totalMoney;
 

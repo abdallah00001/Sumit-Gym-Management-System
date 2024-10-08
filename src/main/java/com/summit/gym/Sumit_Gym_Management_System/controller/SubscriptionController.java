@@ -2,19 +2,17 @@ package com.summit.gym.Sumit_Gym_Management_System.controller;
 
 import com.summit.gym.Sumit_Gym_Management_System.dto.MemberDto;
 import com.summit.gym.Sumit_Gym_Management_System.dto.SubscriptionDto;
-import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
-import com.summit.gym.Sumit_Gym_Management_System.model.Coach;
-import com.summit.gym.Sumit_Gym_Management_System.model.Member;
-import com.summit.gym.Sumit_Gym_Management_System.model.Subscription;
-import com.summit.gym.Sumit_Gym_Management_System.model.User;
+import com.summit.gym.Sumit_Gym_Management_System.dto.request_dtos.SubscriptionSaveRequestDto;
+import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
+import com.summit.gym.Sumit_Gym_Management_System.model.*;
 import com.summit.gym.Sumit_Gym_Management_System.reposiroty.SubscriptionRepo;
 import com.summit.gym.Sumit_Gym_Management_System.service.SubscriptionService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,15 +40,16 @@ public class SubscriptionController {
 
     //TODO: MODIFY IN JS
     @Operation(summary = "Save new Subscription")
-    @PostMapping("/sub-type/{subTypeId}/cashout/{paidTotal}")
-    public ResponseEntity<String> save(@PathVariable int paidTotal,
-                                       @PathVariable
+    @PostMapping("/sub-type/{subTypeId}")
+    public ResponseEntity<String> save(@PathVariable
                                        @Positive(message = "Please select a valid subscription type")
                                        Long subTypeId,
-                                       @RequestBody @Valid Subscription subscription) {
-        String cashOutMessage = subscriptionService.save(subscription, paidTotal, subTypeId);
+                                       @RequestBody SubscriptionSaveRequestDto subscriptionSaveRequestDto) {
+        Member member = subscriptionSaveRequestDto.getMember();
+        Payment payment = subscriptionSaveRequestDto.getPayment();
+        subscriptionService.save(payment, subTypeId, member);
         return ResponseEntity
-                .ok("Subscription created successfully\n" + cashOutMessage);
+                .ok("Subscription created successfully");
     }
 
     @Operation(summary = "Get total income between range of 2 dates")
@@ -71,8 +70,8 @@ public class SubscriptionController {
     @Operation(summary = "Add date to attended days of Sub")
     @PutMapping("member/{memberId}/day/{date}")
     public ResponseEntity<MemberDto> addDay(@PathVariable
-                                         @PastOrPresent(message = "Date must be past or present")
-                                         LocalDate date,
+                                            @PastOrPresent(message = "Date must be past or present")
+                                            LocalDate date,
                                             @PathVariable Long memberId) {
         MemberDto memberDto = subscriptionService.addAttendedDay(memberId, date);
         return ResponseEntity
@@ -124,19 +123,24 @@ public class SubscriptionController {
     ////////////////////////////////////////////////////
     @GetMapping("/filter")
     public List<SubscriptionDto> filterSubscriptions(
-            @RequestParam(required = false) Member member,
-            @RequestParam(required = false) PaymentType paymentType,
-            @RequestParam(required = false) User user,
-            @RequestParam(required = false) Coach coach,
+            @RequestParam(required = false) Long memberId,
+            @RequestParam(required = false) Long coachId,
             @RequestParam(required = false) LocalDate startDate,
             @RequestParam(required = false) LocalDate finishDate,
-            @RequestParam(required = false) Boolean isExpired,
-            @RequestParam(required = false) Boolean isFrozen
+            @RequestParam(required = false) SubscriptionStatus status
     ) {
 
-        return subscriptionService.filter(member, paymentType, coach, user,
-                startDate, finishDate, isExpired, isFrozen);
+        return subscriptionService.filter(memberId, coachId,
+                startDate, finishDate, status);
 
+    }
+
+    @PostMapping("/renew/{subscriptionId}")
+    public ResponseEntity<String> renew(@PathVariable Long subscriptionId,
+                                        @RequestBody Payment payment) {
+        String message = subscriptionService.renew(payment, subscriptionId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(message);
     }
 
 

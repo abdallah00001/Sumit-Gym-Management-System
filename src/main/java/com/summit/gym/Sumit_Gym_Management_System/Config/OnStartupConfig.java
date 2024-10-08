@@ -18,12 +18,12 @@ public class OnStartupConfig implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) {
-        createAndSaveDefaultAdmin();
+        createAndSaveDefaultUsers();
     }
 
 
 
-    private void createAndSaveDefaultAdmin() {
+    private void createAndSaveDefaultUsers() {
         if (userRepo.findAdmin().isEmpty()) {
             // Create a default admin
             User admin = new User();
@@ -32,7 +32,16 @@ public class OnStartupConfig implements ApplicationRunner {
 //            admin.setPassword(new BCryptPasswordEncoder().encode("adminpassword")); // Replace with a secure password
             admin.setRole(Role.ROLE_ADMIN);
             userRepo.save(admin);
+            createAndSaveCashier();
         }
+    }
+
+    private void createAndSaveCashier() {
+        User cashier = new User();
+        cashier.setUserName("cashier");
+        cashier.setPassword(passwordEncoder.encode("123"));
+        cashier.setRole(Role.ROLE_CASHIER);
+        userRepo.save(cashier);
     }
 
 

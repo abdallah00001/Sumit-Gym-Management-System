@@ -22,13 +22,13 @@ public class ReportService {
         ReportDto reportDto = new ReportDto();
         int membersAttendedCount = subscriptionRepo.countDistinctMembersByAttendance(startDate, finishDate);
         int membersThatPaidCount = subscriptionRepo.countDistinctMemberThatPaidByDateBetween(startDate, finishDate);
-        long totalRevenue = subscriptionRepo.findTotalRevenueByDateBetween(startDate, finishDate);
+//        long totalRevenue = subscriptionRepo.findTotalRevenueByDateBetween(startDate, finishDate);
         int membersThatRefundedCount = refundRepo.countDistinctMembersThatRefundedByDateBetween(startDate, finishDate);
         long totalAmountRefunded = refundRepo.findTotalAmountRefundedByDateBetween(startDate, finishDate);
 
         reportDto.setMembersAttendedCount(membersAttendedCount);
         reportDto.setMemberThatPaidCount(membersThatPaidCount);
-        reportDto.setTotalRevenue(totalRevenue);
+//        reportDto.setTotalRevenue(totalRevenue);
         reportDto.setMembersThatRefundedCount(membersThatRefundedCount);
         reportDto.setTotalAmountRefunded(totalAmountRefunded);
         return reportDto;

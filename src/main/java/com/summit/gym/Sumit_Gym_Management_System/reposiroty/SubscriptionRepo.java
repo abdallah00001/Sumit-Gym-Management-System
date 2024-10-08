@@ -46,10 +46,10 @@ public interface SubscriptionRepo extends JpaRepository<Subscription, Long>, Jpa
                                                  @Param("finish") LocalDate finish);
 
 
-    @Query("SELECT SUM(s.finalPrice) FROM Subscription s " +
+/*    @Query("SELECT SUM(s.finalPrice) FROM Subscription s " +
             "WHERE s.startDate BETWEEN :start AND :finish")
     long findTotalRevenueByDateBetween(@Param("start") LocalDate start,
-                                       @Param("finish") LocalDate finish);
+                                       @Param("finish") LocalDate finish);*/
 
 
 

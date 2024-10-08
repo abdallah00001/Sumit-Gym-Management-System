@@ -33,7 +33,7 @@ public class SubscriptionType extends BaseEntity{
     @PositiveOrZero(message = "Price" + ValidationUtil.POSITIVE_OR_ZERO)
     private int price;
 
-    @Min(value = 1,message = "Period" + ValidationUtil.POSITIVE)
+//    @Min(value = 1,message = "Period" + ValidationUtil.POSITIVE)
     private int periodLength;
 
     @PositiveOrZero(message = "Freeze days" + ValidationUtil.POSITIVE_OR_ZERO)

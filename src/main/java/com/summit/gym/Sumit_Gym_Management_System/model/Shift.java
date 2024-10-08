@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = "subscriptions")
+//@ToString(exclude = "subscriptions")
 @Builder
 public class Shift extends BaseEntity{
 
@@ -30,14 +30,18 @@ public class Shift extends BaseEntity{
     private LocalDateTime startDateTime;
     private LocalDateTime finishDateTime;
 
-    @OneToMany
+//    @OneToMany
 //            (cascade = {CascadeType.PERSIST,CascadeType.MERGE})
 //    @OneToMany(cascade = {CascadeType.MERGE,CascadeType.DETACH})
 //    @OneToMany(fetch = FetchType.EAGER)
-    private List<Subscription> subscriptions = new ArrayList<>();
+//    private List<Subscription> subscriptions = new ArrayList<>();
 
     @OneToMany
-    private List<Refund> refunds;
+
+    private List<Payment> payments = new ArrayList<>();
+
+    @OneToMany
+    private List<Refund> refunds = new ArrayList<>();
 
     private int totalRevenue;
 
@@ -45,8 +49,8 @@ public class Shift extends BaseEntity{
 
 
     private int calculateTotalRevenue() {
-        int subscriptionRevenue = subscriptions.stream()
-                .mapToInt(Subscription::getFinalPrice)
+        int subscriptionRevenue = payments.stream()
+                .mapToInt(Payment::getFinalPrice)
                 .sum();
 
         int refundedAmount = refunds.stream()

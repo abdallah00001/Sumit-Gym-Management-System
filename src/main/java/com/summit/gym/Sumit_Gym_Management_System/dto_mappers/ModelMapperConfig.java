@@ -17,8 +17,8 @@ public class ModelMapperConfig {
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
-        modelMapper.typeMap(Subscription.class, SubscriptionDto.class)
-                .addMappings(mapper -> mapper.map(Subscription::getUser, SubscriptionDto::setUserDto));
+//        modelMapper.typeMap(Subscription.class, SubscriptionDto.class)
+//                .addMappings(mapper -> mapper.map(Subscription::getUser, SubscriptionDto::setUserDto));
 
         modelMapper.addConverter(new Converter<LocalDateTime, String>() {
             @Override
