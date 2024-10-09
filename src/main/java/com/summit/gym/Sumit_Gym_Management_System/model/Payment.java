@@ -6,7 +6,6 @@ import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
 import com.summit.gym.Sumit_Gym_Management_System.validation.ValidationUtil;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -45,6 +44,7 @@ public class Payment extends PaymentUnit{
     @ManyToOne
     private Subscription subscription;
 
+    @Enumerated(EnumType.STRING)
     private PaymentPurpose purpose;
 
 
