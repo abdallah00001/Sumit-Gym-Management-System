@@ -8,7 +8,7 @@ public class RegistrationView {
 
     @GetMapping("/register")
     public String registrationView() {
-        return "reg.html";
+        return "final/project-v2/reg.html";
     }
 
 }

@@ -2,6 +2,7 @@ package com.summit.gym.Sumit_Gym_Management_System.controller;
 
 import com.summit.gym.Sumit_Gym_Management_System.dto.MemberDto;
 import com.summit.gym.Sumit_Gym_Management_System.dto.SubscriptionDto;
+import com.summit.gym.Sumit_Gym_Management_System.dto.request_dtos.SubscriptionRenewRequestDto;
 import com.summit.gym.Sumit_Gym_Management_System.dto.request_dtos.SubscriptionSaveRequestDto;
 import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
 import com.summit.gym.Sumit_Gym_Management_System.model.*;
@@ -47,7 +48,9 @@ public class SubscriptionController {
                                        @RequestBody SubscriptionSaveRequestDto subscriptionSaveRequestDto) {
         Member member = subscriptionSaveRequestDto.getMember();
         Payment payment = subscriptionSaveRequestDto.getPayment();
-        subscriptionService.save(payment, subTypeId, member);
+        Coach privateTrainer = subscriptionSaveRequestDto.getPrivateTrainer();
+        String notes = subscriptionSaveRequestDto.getNotes();
+        subscriptionService.save(payment, subTypeId, member, privateTrainer, notes);
         return ResponseEntity
                 .ok("Subscription created successfully");
     }
@@ -137,8 +140,10 @@ public class SubscriptionController {
 
     @PostMapping("/renew/{subscriptionId}")
     public ResponseEntity<String> renew(@PathVariable Long subscriptionId,
-                                        @RequestBody Payment payment) {
-        String message = subscriptionService.renew(payment, subscriptionId);
+                                        @RequestBody SubscriptionRenewRequestDto subscriptionRenewRequestDto) {
+        Payment payment = subscriptionRenewRequestDto.getPayment();
+        String notes = subscriptionRenewRequestDto.getNotes();
+        String message = subscriptionService.renew(payment, subscriptionId, notes);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(message);
     }

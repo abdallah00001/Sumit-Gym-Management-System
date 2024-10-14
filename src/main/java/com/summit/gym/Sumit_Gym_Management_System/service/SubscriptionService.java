@@ -118,12 +118,13 @@ public class SubscriptionService {
     }*/
 
 
-    public void save(Payment payment, Long subscriptionTypeId, Member member) {
+    public void save(Payment payment, Long subscriptionTypeId, Member member, Coach coach, String notes) {
         Shift shift;
         User user;
         Long memberID = member.getId();
         PaymentPurpose paymentPurpose = PaymentPurpose.NEW_MEMBER;
         Subscription subscription = new Subscription();
+        subscription.setPrivateTrainer(coach);
         SubscriptionType subscriptionType = subscriptionTypeRepo.findById(subscriptionTypeId)
                 .orElseThrow(() -> new EntityNotFoundException("Subscription type wasn't found."));
         subscription.setSubscriptionType(subscriptionType);
@@ -159,15 +160,19 @@ public class SubscriptionService {
 //        shift.getSubscriptions().add(subscription);
         shift.getPayments().add(payment);
         user = sessionAttributesManager.getUser();
+        subscription.setNotes(notes);
         Subscription savedSub = manageAndSaveSub(payment, member, subscription, paymentPurpose,user);
         Long savedMemberId = savedSub.getMember().getId();
-        String savedQrLocation = null;
+
+        if (payment.getPurpose().equals(PaymentPurpose.NEW_MEMBER)) {
+        String savedQrLocation;
         try {
             savedQrLocation = qrCodeService.saveQrCodeToFile(savedMemberId);
         } catch (WriterException | IOException e) {
             throw new RuntimeException(e);
         }
         WhatsAppMessengerService.sendCode(member.getPhone(), savedQrLocation);
+        }
     }
 
     private Subscription manageAndSaveSub(Payment payment, Member member, Subscription subscription, PaymentPurpose paymentPurpose, User user) {
@@ -190,7 +195,7 @@ public class SubscriptionService {
     }
 
 
-    public String renew(Payment payment, Long subscriptionId) {
+    public String renew(Payment payment, Long subscriptionId, String notes) {
         Subscription subscription = subscriptionRepo.findById(subscriptionId)
                 .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_MESSAGE));
         SubscriptionStatus status = subscription.getStatus();
@@ -202,6 +207,8 @@ public class SubscriptionService {
         }
         Subscription newSub = new Subscription();
         newSub.setSubscriptionType(subscription.getSubscriptionType());
+        newSub.setPrivateTrainer(subscription.getPrivateTrainer());
+        subscription.setNotes(notes);
         manageAndSaveSub(payment, subscription.getMember(), newSub, PaymentPurpose.RENEW, subscription.getUser());
 
         return "Subscription renewed successfully";
@@ -247,6 +254,13 @@ public class SubscriptionService {
         Subscription latestSubscription = member.getLatestSubscription();
         //Make sure sub is active
         validateStatus(latestSubscription);
+//        latestSubscription.getAttendedDays().add(attendedDate);
+        List<LocalDate> attendedDays = latestSubscription.getAttendedDays();
+        if (attendedDays.contains(attendedDate)) {
+            throw new IllegalArgumentException(
+                    "Date already added can't add the same session date twice"
+            );
+        }
         latestSubscription.getAttendedDays().add(attendedDate);
         subscriptionRepo.save(latestSubscription);
         return memberMapper.mapToMemberDto(member);
@@ -344,13 +358,13 @@ public class SubscriptionService {
     }
 
     public static void main(String[] args) throws JsonProcessingException {
-        LocalDate exp = LocalDate.of(2025, 5, 12);
-        System.out.println(Period.between(LocalDate.now(), exp));
-        Period amountToAdd = Period.of(0, 3, 0);
-        Period period = Period.ofDays(50);
-
-        System.out.println(DateTimeFormatterUtil.periodToString(amountToAdd));
-        System.out.println(DateTimeFormatterUtil.periodToString(period));
+//        LocalDate exp = LocalDate.of(2025, 5, 12);
+//        System.out.println(Period.between(LocalDate.now(), exp));
+//        Period amountToAdd = Period.of(0, 3, 0);
+//        Period period = Period.ofDays(50);
+//
+//        System.out.println(DateTimeFormatterUtil.periodToString(amountToAdd));
+//        System.out.println(DateTimeFormatterUtil.periodToString(period));
 
     }
 

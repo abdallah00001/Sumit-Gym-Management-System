@@ -38,10 +38,25 @@ async function findIncomeInDateRange(startDate,finishDate) {
 }
 
 
-async function saveSub(subscription, subscriptionTypeId, paidTotal) {
+// async function saveSub(subscription, subscriptionTypeId, paidTotal) {
 
-    const endpoint = appendSubToBaseEndPoint(`/sub-type/${subscriptionTypeId}/cashout/${paidTotal}`)
-    await apiPost(endpoint, subscription)
+//     const endpoint = appendSubToBaseEndPoint(`/sub-type/${subscriptionTypeId}/cashout/${paidTotal}`)
+//     await apiPost(endpoint, subscription)
+// }
+
+async function saveSub(payment, subscriptionTypeId, member, notes, privateTrainer) {
+
+    const body = {
+        member: member,
+        payment: payment,
+        notes: notes,
+        privateTrainer: privateTrainer
+    }
+    console.log(body);
+    
+
+    const endpoint = appendSubToBaseEndPoint(`/sub-type/${subscriptionTypeId}`)
+    return await apiPost(endpoint, body)
 }
 
 async function addAteendanceToSub(memberId, date) {

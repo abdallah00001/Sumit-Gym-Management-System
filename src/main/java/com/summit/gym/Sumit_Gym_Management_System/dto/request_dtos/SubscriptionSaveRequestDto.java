@@ -1,6 +1,7 @@
 package com.summit.gym.Sumit_Gym_Management_System.dto.request_dtos;
 
 
+import com.summit.gym.Sumit_Gym_Management_System.model.Coach;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
 import com.summit.gym.Sumit_Gym_Management_System.model.Payment;
 import lombok.AllArgsConstructor;
@@ -16,5 +17,7 @@ public class SubscriptionSaveRequestDto {
 
     private Member member;
     private Payment payment;
+    private Coach privateTrainer;
+    private String notes;
 
 }

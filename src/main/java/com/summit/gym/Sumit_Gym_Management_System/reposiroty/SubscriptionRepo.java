@@ -47,7 +47,7 @@ public interface SubscriptionRepo extends JpaRepository<Subscription, Long>, Jpa
                                                  @Param("finish") LocalDate finish);
 
 
-    @Query("SELECT SUM(p.finalPrice) " +
+    @Query("SELECT COALESCE(SUM(p.finalPrice), 0) " +
             "FROM Subscription s JOIN s.payments p " +
             "WHERE s.startDate BETWEEN :startDate AND :finishDate " +
             "AND DATE(p.createdAt) BETWEEN :startDate AND :finishDate")
@@ -55,11 +55,11 @@ public interface SubscriptionRepo extends JpaRepository<Subscription, Long>, Jpa
                                        @Param("finishDate") LocalDate finish);
 
 
-    @Query("SELECT COUNT(DISTINCT s.member) " +
+    @Query("SELECT COALESCE(COUNT(DISTINCT s.member), 0) " +
             "FROM Subscription s JOIN s.payments p " +
             "WHERE p.purpose = 'RENEW' " +
             "AND s.startDate BETWEEN :start AND :finish")
-    public Long countDistinctMembersThatRenewed(@Param("start") LocalDate start,
+    Long countDistinctMembersThatRenewed(@Param("start") LocalDate start,
                                                 @Param("finish") LocalDate finish);
 
 

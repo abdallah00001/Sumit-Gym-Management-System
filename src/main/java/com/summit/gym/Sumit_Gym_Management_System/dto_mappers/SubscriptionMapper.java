@@ -11,8 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
 @Component
 public class SubscriptionMapper extends BaseMapper {
 
@@ -69,9 +67,11 @@ public class SubscriptionMapper extends BaseMapper {
             mapping.map(Subscription::getAttendedDaysCount,
                     SubscriptionDto::setAttendedDaysCount);
 
-
             mapping.map(Subscription::getSubscriptionType,
                     SubscriptionDto::setSubscriptionTypeDto);
+
+            mapping.map(Subscription::getRemainingFreezeLimitCount,
+                    SubscriptionDto::setRemainingFreezeLimit);
 
 
             // Format `startDate` and `expireDate` similarly if needed

@@ -3,6 +3,7 @@ package com.summit.gym.Sumit_Gym_Management_System.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.summit.gym.Sumit_Gym_Management_System.enums.PaymentType;
 import com.summit.gym.Sumit_Gym_Management_System.enums.SubscriptionStatus;
+import com.summit.gym.Sumit_Gym_Management_System.model.Coach;
 import com.summit.gym.Sumit_Gym_Management_System.model.Freeze;
 import com.summit.gym.Sumit_Gym_Management_System.model.Member;
 import com.summit.gym.Sumit_Gym_Management_System.model.Payment;
@@ -33,6 +34,7 @@ public class SubscriptionDto extends BaseDto{
     private Member member;
     private PaymentType paymentType;
     private UserDto userDto;
+    private Coach privateTrainer;
     private SubscriptionTypeDto subscriptionTypeDto;
     private String createdAtString;
     private LocalDate startDate;
@@ -44,6 +46,7 @@ public class SubscriptionDto extends BaseDto{
     private String notes;
     private SubscriptionStatus status;
     private List<Freeze> freezeHistory;
+    private int remainingFreezeLimit;
     private List<Payment> payments;
 
 }

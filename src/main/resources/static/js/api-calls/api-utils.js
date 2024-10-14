@@ -120,7 +120,7 @@ async function apiGet(endpoint, options = {}) {
  * @returns {Promise<any>} - A promise resolving with the response data.
  */
 async function apiPost(endpoint, data, options = {}) {
-    const responseBody = await apiRequest(endpoint, {
+    const response = await apiRequest(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...options.headers },
         body: JSON.stringify(data),
@@ -128,7 +128,10 @@ async function apiPost(endpoint, data, options = {}) {
     });
 
     //For confirmation message
-    showToast(responseBody)
+    showToast(response)
+    
+    return response
+    
 }
 
 /**

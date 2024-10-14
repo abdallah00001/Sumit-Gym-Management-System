@@ -16,14 +16,17 @@ async function register() {
     // const member = populateMember()
     // console.log(member);
     
-    const subTypeid = getIdFromSelector(subscriptionTypeSelector)
-    
-    const subscription = createSubscription()
-    console.log(subscription);
-    
+    // const subTypeid = getIdFromSelector(subscriptionTypeSelector)
+    const member = populateMember()
+    const subType = getCurrentType()
+    const subTypeid = subType.id
+    const payment = createPayment(subType.price)
+    const notes = document.getElementById("notes").value
+    // console.log(subscription);
+    const prtivateTrainer = getCoach()
 
-    const response = await saveSub(subscription, subTypeid, 0)
-    if (response.ok) {
+    const response = await saveSub(payment, subTypeid,member, notes, prtivateTrainer)
+    if (response.status >= 200 && response.status < 300) {
         clearInputs()
         cashOutElem.textContent=""
     }
@@ -94,7 +97,7 @@ async function populateSubscriptionTypes() {
 
 async function populateTrainerNames() {
     try {
-        const response = await getAllSubscriptionTypes();
+        const response = await getAllCoaches();
         coaches = response.body;
 
         // Clear existing options except the default one
@@ -112,21 +115,26 @@ async function populateTrainerNames() {
     }
 }
 
-function createSubscription() {
-    const member = populateMember()
-    const coachId = getIdFromSelector(trainerSelector)
-    const coach = findSelectedObjectFromListById(coachId, coaches) 
+function createPayment(originalPrice) {
     const paymentType = getElementValueOrNull('paymentType')
     const discount = discountInput.value
 
     const subscription = {
-        member: member,
-        coach: coach,
+        // member: member,
+        // coach: coach,
+        originalPrice: originalPrice,
         paymentType: paymentType,
         discount: discount
     }
 
     return subscription
+}
+
+function getCoach() {
+    const coachId = getIdFromSelector(trainerSelector)
+    const coach = findSelectedObjectFromListById(coachId, coaches) 
+    console.log(coach)
+    return coach
 }
 
 window.onload = function() {

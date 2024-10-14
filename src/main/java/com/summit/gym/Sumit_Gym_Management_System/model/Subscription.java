@@ -228,7 +228,7 @@ public class Subscription extends BaseEntity{
 
 
     @PrePersist
-    @PreUpdate
+//    @PreUpdate
     public void setDates() {
         startDate = LocalDate.now();
         createdAt = LocalDateTime.now();
