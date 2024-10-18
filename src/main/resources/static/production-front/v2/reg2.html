@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Administration</title>
+    <link rel="stylesheet" href="/production-front/v2/reg.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&display=swap" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <nav class="header-nav" aria-label="Main Navigation">
+                <div class="logo-content">
+                    <img src="/production-front/v2/logo.png" alt="Gym Administration Logo" class="nav-icon" width="70" height="60">
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#administration">Administration</a></li>
+                    <li><a href="#report-section">Performance Overview</a></li>
+                    <li><a href="reg.html">Client Management</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <div class="background d-flex flex-column justify-content-center">
+        <div class="row m-auto">
+            <!-- Overlay for Mouse Move Effect -->
+            <div class="shadow-circle"></div>
+            <div class="hero col-md-11 col-12">
+                <h1 class="anime">
+                    Manage Your Gym <br>
+                    <span class="center_heading">Efficiently</span><br>
+                    with <span class="text-red">Sumit</span> Administration.
+                </h1>
+                <p class="paragraph">
+                    Welcome to the Gym Administration Portal. Easily manage client registrations, existing clients, and administrative tasks in one platform. Simplify client management and keep track of your gym's daily operations.
+                </p>
+            </div>
+        </div>
+        <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z" class="shape-fill"></path>
+        </svg>
+    </div>
+
+    <!-- Administration Section -->
+    <div class="administration-section" id="administration">
+        <h2>Administration Panel</h2>
+
+        <div class="administration-container">
+            <!-- Add Subscription Form -->
+            <div class="form-container add-subscription">
+                <h3>Add Subscription</h3>
+                <form id="subscription-form"> 
+                    <label for="subName">Subscription Name:</label> 
+                    <input type="text" id="subName" required /> 
+
+                    <label for="periodType">Period Type (Daily/Monthly):</label> 
+                    <select id="periodType" required> 
+                        <option value="Daily">Daily</option> 
+                        <option value="Monthly">Monthly</option> 
+                    </select> 
+
+                    <label for="periodLength">Period Length:</label> 
+                    <input type="number" id="periodLength" required /> 
+
+                    <label for="price">Price:</label> 
+                    <input type="number" id="price" required /> 
+
+                    <label for="allowedFreezeDays">Allowed Freeze Days:</label> 
+                    <input type="number" id="allowedFreezeDays" required /> 
+
+                    <label for="forPrivateTrainer">For Private Trainer:</label> 
+                    <select id="forPrivateTrainer" required> 
+                        <option value="true">Yes</option> 
+                        <option value="false">No</option> 
+                    </select>  
+                    
+                    <button type="submit" class="submit-btn">Add Subscription</button> 
+                </form>
+            </div>
+
+            <!-- Side Image -->
+            <div class="administration-image">
+                <img src="/production-front/v2/sec5.jpg" alt="Administration Image">
+            </div>
+
+            <!-- Add Personal Trainer Form -->
+            <div class="form-container add-trainer">
+                <h3>Add Personal Trainer</h3>
+                <form id="trainer-form">
+                    <label for="trainerName">Trainer Name:</label>
+                    <input type="text" id="trainerName" required />
+
+                    <label for="trainerPhone">Phone:</label>
+                    <input type="text" id="trainerPhone" required />
+
+                    <button type="submit" class="submit-btn">Add Trainer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Section -->
+    <section id="report-section" class="report-container">
+        <div class="report-flex">
+            <div class="report-content">
+                <h2>Performance Overview</h2>
+
+                <!-- Date Range Input -->
+                <div class="date-range">
+                    <label for="start-date">Start Date:</label>
+                    <input type="date" id="start-date" name="start-date">
+                    
+                    <label for="finish-date">Finish Date:</label>
+                    <input type="date" id="finish-date" name="finish-date">
+                    
+                    <button id="fetch-report-btn">Get Report</button>
+                </div>
+
+                <!-- Report Data Display -->
+                <div class="report-data">
+                    <div class="report-item">
+                        <h3>Members Attended</h3>
+                        <p id="membersAttendedCount">0</p>
+                    </div>
+                    <div class="report-item">
+                        <h3>Members Paid</h3>
+                        <p id="memberThatPaidCount">0</p>
+                    </div>
+                    <div class="report-item">
+                        <h3>Members Refunded</h3>
+                        <p id="membersThatRefundedCount">0</p>
+                    </div>
+                    <div class="report-item">
+                        <h3>Total Revenue</h3>
+                        <p id="totalRevenue">$0</p>
+                    </div>
+                    <div class="report-item">
+                        <h3>Total Refunded</h3>
+                        <p id="totalAmountRefunded">$0</p>
+                    </div>
+                    <div class="report-item">
+                        <h3>Members Renewed</h3>
+                        <p id="membersThatRenewed">0</p>
+                    </div>
+
+                    <!-- Subscription Types Breakdown -->
+                    <div class="report-item">
+                        <h3>Members per Subscription Type</h3>
+                        <div id="subscriptionTypes" class="subscription-types"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Side Image -->
+            <div class="report-image">
+                <img src="https://img.freepik.com/premium-photo/muscular-man-flexing-muscles-dark-gym_600776-19879.jpg" alt="Gym Illustration">
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Company Info -->
+                <div class="footer-section company-info">
+                    <h4>Sumit Gym Administration</h4>
+                    <p>Manage subscriptions, trainers, and sessions effortlessly with our powerful administration platform.</p>
+                    <p>&copy; 2024 Abdulallah Ibrahim, Developer. All rights reserved.</p>
+                </div>
+    
+                <!-- Quick Links -->
+                <div class="footer-section quick-links">
+                    <h4>Quick Links</h4>
+                    <ul class="nav-menu">
+                        <li><a href="#register-client">Register New Client</a></li>
+                        <li><a href="#client-signin">Sign In Existing Client</a></li>
+                        <li><a href="reg2.html">Admin Dashboard</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- <script src="js/pages/reg.js"></script>
+    <script src="reg-original.js"></script>
+    <script src="js/api-calls/api-utils.js"></script>
+    <script src="js/api-calls/subscriptions/subscribtion-calls.js"></script>
+    <script src="js/api-calls/subscription-types/subscriptionType-calls.js"></script>
+    <script src="js/api-calls/coach/coach-calls.js"></script>
+    <script src="js/pages/page-utils.js "></script> -->
+
+    <script>
+
+let mode = 1;
+let subscriptionId = null;
+let memberId;
+let subscriptionPrice;
+// let subscriptionType;
+let personalTrainer;
+let currentMember = null;
+
+$('#fetch-report-btn').on('click', function() {
+    const startDate = $('#start-date').val();
+    const finishDate = $('#finish-date').val();
+
+    if (startDate && finishDate) {
+        $.ajax({
+            url: `http://localhost:8080/api/reports/${startDate}/${finishDate}`,
+            method: 'GET',
+            xhrFields: {
+                withCredentials: true
+            },
+            headers: {
+                "Authorization": "Basic " + btoa("admin:123") // Replace with actual username and password
+            },
+            success: function(data) {
+                alert('Report data fetched successfully!'); // Success alert
+
+                $('#membersAttendedCount').text(data.membersAttendedCount);
+                $('#memberThatPaidCount').text(data.memberThatPaidCount);
+                $('#membersThatRefundedCount').text(data.membersThatRefundedCount);
+                $('#totalRevenue').text(`$${data.totalRevenue}`);
+                $('#totalAmountRefunded').text(`$${data.totalAmountRefunded}`);
+                $('#membersThatRenewed').text(data.membersThatRenewed);
+
+                $('#subscriptionTypes').empty();
+
+for (const [key, value] of Object.entries(data.memberCountPerSubscriptionType)) {
+    // Extract the name by parsing the key string
+    const nameMatch = key.match(/name=([^,]+)/);
+    const subscriptionName = nameMatch ? nameMatch[1] : "Unknown";
+
+    if (value > 0) { 
+        $('#subscriptionTypes').append(`
+            <div class="subscription-type">${subscriptionName}: <span>${value}</span></div>
+        `);
+    }
+}
+
+
+                // for (const [key, value] of Object.entries(data.memberCountPerSubscriptionType)) {
+                //     if (value > 0) { 
+                //         $('#subscriptionTypes').append(`
+                //             <div class="subscription-type">${key}: <span>${value}</span></div>
+                //         `);
+                //     }
+                // }
+            },
+            error: function() {
+                alert('Failed to fetch the report data. Please try again.');
+            }
+        });
+    } else {
+        alert('Please select both start and finish dates.');
+    }
+});
+
+
+document.getElementById('trainer-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const trainerData = {
+        name: document.getElementById('trainerName').value,
+        phone: document.getElementById('trainerPhone').value
+    };
+
+    fetch('http://localhost:8080/api/coach/admin/save', {
+        method: 'POST',
+        // mode: 'no-cors',
+        credentials: "include",
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(trainerData)
+    })
+
+        .then(response => response.text())
+        .then(data => {
+            alert(`Trainer added successfully! ID: ${data.id}`);
+            //From reg-original.js
+            populateTrainerNames()
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+
+// Display subscription info in the subsInfo section
+function displaySubscriptionInfo(subscriptions) {
+    if (subscriptions && subscriptions.length > 0) {
+        const subscription = subscriptions[0]; // Assuming you want to display the first subscription
+
+        // Populate subscription info
+        document.getElementById('sessionsInfo').textContent = subscription.attendedDaysCount;
+        document.getElementById('trainerInfo').textContent = subscription.subscriptionTypeDto.name;
+        document.getElementById('statusInfo').textContent = subscription.status;
+
+        // Set up action buttons with appropriate functionality
+        setupActionButtons(subscription);
+    } else {
+        console.error('No subscriptions found for this user.');
+    }
+}
+
+document.getElementById('subscription-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const subscriptionData = {
+        name: document.getElementById('subName').value,
+        price: parseFloat(document.getElementById('price').value),
+        periodLength: parseInt(document.getElementById('periodLength').value),
+        allowedFreezeDays: parseInt(document.getElementById('allowedFreezeDays').value),
+        periodType: document.getElementById('periodType').value,
+        forPrivateTrainer: document.getElementById('forPrivateTrainer').value
+    };
+
+    fetch('http://localhost:8080/api/sub-type/admin/save', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(subscriptionData)
+    })
+        .then(response => response.text())
+        .then(data => {
+            alert('Subscription added successfully!');
+            //From reg-original.js
+            populateSubscriptionTypes()
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+});
+
+    </script>
+
+</body>
+</html>

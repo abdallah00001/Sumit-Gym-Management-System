@@ -52,17 +52,47 @@ public class Member extends BaseEntity {
     @OneToMany
     private List<Subscription> subscriptions = new ArrayList<>();
 
-    @JsonIgnore
-    public Subscription getLatestSubscription() {
-        return subscriptions.getLast();
-    }
+//    @JsonIgnore
+//    public Subscription getLatestSubscription() {
+//        return subscriptions.getLast();
+//    }
 
     public void addSubscription(Subscription subscription) {
         subscriptions.add(subscription);
     }
 
+    @JsonIgnore
+    public Subscription getLatestSubscription() {
+        int size = subscriptions.size();
+        Subscription currentSub = null;
+        for (int i = size - 1; i >= 0; i--) {
+            currentSub = subscriptions.get(i);
+            LocalDate startDate = currentSub.getStartDate();
 
-    //    @JsonIgnore
+            if (startDate.isBefore(LocalDate.now()) || startDate.isEqual(LocalDate.now())) {
+                break;
+            }
+        }
+        return currentSub;
+    }
+
+    @JsonIgnore
+    public Subscription getPendingSubscription() {
+        if (subscriptions.isEmpty()) {
+            return null;
+        }
+        Subscription pendingSup = subscriptions.getLast();
+        if (pendingSup.getStartDate().isAfter(LocalDate.now())) {
+            return pendingSup;
+        }
+        return null;
+    }
+
+
+}
+
+
+//    @JsonIgnore
 ////    @JsonIgnoreProperties("member")
 //    @OneToMany
 //            (cascade = CascadeType.ALL)
@@ -74,6 +104,3 @@ public class Member extends BaseEntity {
 //                subscriptions.getLast()
 //                : null;
 //    }
-
-
-}

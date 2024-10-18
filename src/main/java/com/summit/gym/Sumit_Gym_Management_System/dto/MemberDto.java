@@ -24,6 +24,11 @@ public class MemberDto extends BaseDto{
     //    private SubscriptionForMemberDto subscriptionForMemberDto;
     @JsonIgnoreProperties("member")
     private SubscriptionDto subscriptionDto;
+    private SubscriptionDto pendingSubscriptionDto;
+
+
+
+
 
 //    public static Converter<Member, MemberWithAttendanceDto> toDtoConverter() {
 //        return new Converter<Member, MemberWithAttendanceDto>() {

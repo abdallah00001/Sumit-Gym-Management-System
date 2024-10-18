@@ -39,27 +39,28 @@ public class MemberMapper extends BaseMapper {
     }
 
 
-
-
     private Converter<Member, MemberDto> toDtoConverter() {
         return new Converter<Member, MemberDto>() {
             @Override
             public MemberDto convert(MappingContext<Member, MemberDto> context) {
                 Member member = context.getSource();
-//                SubscriptionForMemberDto subscriptionForMemberDto = null;
-                SubscriptionDto subscriptionDto = null;
                 Subscription latestSubscription = member.getLatestSubscription();
+                Subscription pendingSub = member.getPendingSubscription();
                 Gender gender = member.getGender();
-                if (latestSubscription != null) {
-//                    subscriptionForMemberDto = subscriptionMapper.toSubForMemberDto(latestSubscription);
-                    subscriptionDto = subscriptionMapper.toSubscriptionDto(latestSubscription);
-                }
+
+                SubscriptionDto subscriptionDto = latestSubscription != null ?
+                        subscriptionMapper.toSubscriptionDto(latestSubscription) :
+                        null;
+
+                SubscriptionDto pendingSubDto = pendingSub != null ?
+                        subscriptionMapper.toSubscriptionDto(pendingSub) :
+                        null;
+
                 return new MemberDto(member.getId(), member.getName(), member.getPhone(),
-                        gender, member.getBirthDate(), subscriptionDto);
+                        gender, member.getBirthDate(), subscriptionDto, pendingSubDto);
             }
         };
     }
-
 
 
 //    private Converter<MemberWithAttendanceDto, Member> toMemberConverter() {

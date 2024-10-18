@@ -129,6 +129,7 @@ public class SubscriptionService {
                 .orElseThrow(() -> new EntityNotFoundException("Subscription type wasn't found."));
         subscription.setSubscriptionType(subscriptionType);
 
+        //Check private trainer validity
         if (subscription.getPrivateTrainer() != null && !subscription.getSubscriptionType().isForPrivateTrainer()) {
             throw new IllegalArgumentException("This subscription type does not support private trainers");
         } else if (subscription.getPrivateTrainer() == null && subscription.getSubscriptionType().isForPrivateTrainer()) {
@@ -138,20 +139,24 @@ public class SubscriptionService {
 
         //Checking if member is new or not
         if (memberID != null) {
+            boolean isPending = false;
             paymentPurpose = PaymentPurpose.CHANGE;
             member = memberRepo.findById(memberID).orElseThrow(MemberNotFoundException::new);
             //Should never be null if member is not new
-            Subscription latestSubscription = member.getLatestSubscription();
+            Subscription currentSub = member.getLatestSubscription();
+            SubscriptionStatus currentSubStatus = currentSub.getStatus();
+            Subscription pendingSub = member.getPendingSubscription();
 
-            if (latestSubscription != null) {
-                SubscriptionStatus status = latestSubscription.getStatus();
+            //If the current sub is not expired or cancelled then the sub being saved is pending
+            if (!currentSubStatus.equals(CANCELLED) && !currentSubStatus.equals(EXPIRED)) {
+                isPending = true;
+                subscription.setStartDate(currentSub.getExpireDate().plusDays(1));
+            }
 
-                //If the latest sub is frozen or active can't create new one
-                if (!status.equals(EXPIRED) && !status.equals(CANCELLED)) {
-                    throw new IllegalStateException(
-                            String.format("User already has an registered subscription that is %s", status)
-                    );
-                }
+            //If there is a pending sub check if it is cancelled
+            //IF yes we save the new pending sub
+            if (isPending) {
+                checkIfMemberHasValidPendingSub(pendingSub);
             }
         }
 
@@ -172,6 +177,19 @@ public class SubscriptionService {
             throw new RuntimeException(e);
         }
         WhatsAppMessengerService.sendCode(member.getPhone(), savedQrLocation);
+        }
+    }
+
+    private void checkIfMemberHasValidPendingSub(Subscription pendingSub) {
+        if (pendingSub == null) {
+            return;
+        }
+
+        SubscriptionStatus status = pendingSub.getStatus();
+        if (!status.equals(CANCELLED)) {
+            throw new IllegalStateException(
+                    "User already has a pending subscription"
+            );
         }
     }
 
@@ -200,15 +218,15 @@ public class SubscriptionService {
                 .orElseThrow(() -> new EntityNotFoundException(NOT_FOUND_MESSAGE));
         SubscriptionStatus status = subscription.getStatus();
 
-        if (!status.equals(EXPIRED) && !status.equals(CANCELLED)) {
-            throw new IllegalStateException(
-                    String.format("User already has an registered subscription that is %s", status)
-            );
-        }
         Subscription newSub = new Subscription();
+        //Check if sub is pending
+        if (!status.equals(EXPIRED) && !status.equals(CANCELLED)) {
+            checkIfMemberHasValidPendingSub(subscription.getMember().getPendingSubscription());
+            newSub.setStartDate(subscription.getExpireDate().plusDays(1));
+        }
         newSub.setSubscriptionType(subscription.getSubscriptionType());
         newSub.setPrivateTrainer(subscription.getPrivateTrainer());
-        subscription.setNotes(notes);
+        newSub.setNotes(notes);
         manageAndSaveSub(payment, subscription.getMember(), newSub, PaymentPurpose.RENEW, subscription.getUser());
 
         return "Subscription renewed successfully";
@@ -291,6 +309,12 @@ public class SubscriptionService {
         Subscription subscription = findSubscriptionById(subscriptionId);
         subscription.freeze(daysToFreeze);
         subscriptionRepo.save(subscription);
+        Subscription pendingSub = subscription.getMember().getPendingSubscription();
+        if (pendingSub != null) {
+            pendingSub.updateDates(subscription.getExpireDate().plusDays(1));
+            subscriptionRepo.save(pendingSub);
+        }
+
         return String.format("""
                         Subscription freeze completed successfully,
                         Expire date: %s
@@ -304,6 +328,12 @@ public class SubscriptionService {
         Subscription subscription = findSubscriptionById(subscriptionId);
         subscription.unFreeze();
         subscriptionRepo.save(subscription);
+
+        Subscription pendingSub = subscription.getMember().getPendingSubscription();
+        if (pendingSub != null) {
+            pendingSub.updateDates(subscription.getExpireDate().plusDays(1));
+            subscriptionRepo.save(pendingSub);
+        }
 
         return String.format("""
                         Subscription successfully unfrozen,
@@ -354,19 +384,17 @@ public class SubscriptionService {
         Refund savedRefund = refundRepo.save(refund);
         shift.getRefunds().add(savedRefund);
         subscriptionRepo.save(subscription);
+
+        Subscription pendingSub = subscription.getMember().getPendingSubscription();
+        if (pendingSub != null) {
+            pendingSub.updateDates(LocalDate.now());
+            subscriptionRepo.save(pendingSub);
+        }
         return "Refund completed successfully";
     }
 
-    public static void main(String[] args) throws JsonProcessingException {
-//        LocalDate exp = LocalDate.of(2025, 5, 12);
-//        System.out.println(Period.between(LocalDate.now(), exp));
-//        Period amountToAdd = Period.of(0, 3, 0);
-//        Period period = Period.ofDays(50);
-//
-//        System.out.println(DateTimeFormatterUtil.periodToString(amountToAdd));
-//        System.out.println(DateTimeFormatterUtil.periodToString(period));
 
-    }
+
 
 
 }

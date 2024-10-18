@@ -112,10 +112,13 @@ public class Subscription extends BaseEntity{
 
 
     //Frozen and Expired need to be calculated while cancelled is persisted
+    //---VIP---: Order of cases is very important DO NOT change without reason
     public SubscriptionStatus getStatus() {
         SubscriptionStatus status = ACTIVE;
         if (isCancelled) {
             status = SubscriptionStatus.CANCELLED;
+        } else if (isPending()) {
+            status = SubscriptionStatus.PENDING;
         } else if (isExpired()) {
             status = SubscriptionStatus.EXPIRED;
         } else if (isFrozen()) {
@@ -129,7 +132,8 @@ public class Subscription extends BaseEntity{
     }
 
     private boolean isExpired() {
-        return !expireDate.isAfter(LocalDate.now());
+//        return !expireDate.isAfter(LocalDate.now());
+        return LocalDate.now().isAfter(expireDate);
     }
 
     private boolean isFrozen() {
@@ -137,6 +141,10 @@ public class Subscription extends BaseEntity{
         if (latestFreeze == null) return false;
         //The finish date of freeze is normal day with session
         return LocalDate.now().isBefore(latestFreeze.getFinishDate());
+    }
+
+    private boolean isPending() {
+        return startDate.isAfter(LocalDate.now());
     }
 
     public void freeze(int daysToFreeze) {
@@ -222,7 +230,13 @@ public class Subscription extends BaseEntity{
 
 
     private LocalDate calculateExpireDate() {
-        return startDate.plus(subscriptionType.getPeriod());
+        return startDate.plus(subscriptionType.getPeriod()).minusDays(1);
+    }
+
+
+    public void updateDates(LocalDate startDate) {
+        this.startDate = startDate;
+        expireDate = calculateExpireDate();
     }
 
 
@@ -230,7 +244,7 @@ public class Subscription extends BaseEntity{
     @PrePersist
 //    @PreUpdate
     public void setDates() {
-        startDate = LocalDate.now();
+        startDate = startDate != null ? startDate : LocalDate.now();
         createdAt = LocalDateTime.now();
         expireDate = calculateExpireDate();
 //        finalPrice = calculateFinalPrice();
